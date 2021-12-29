@@ -2,6 +2,8 @@ package com.comunidade.resources;
 
 import com.comunidade.services.MessageService;
 
+import java.util.List;
+
 import java.text.ParseException;
 
 import javax.validation.Valid;
@@ -42,5 +44,11 @@ public class MessageResource {
 
 		obj = service.insert(obj);
 		return ResponseEntity.ok().body(obj);
+	}
+
+	@RequestMapping(method=RequestMethod.GET)
+	public ResponseEntity<List<Message>> findAll() {
+		List<Message> list = service.findAll();
+		return ResponseEntity.ok().body(list);
 	}
 }

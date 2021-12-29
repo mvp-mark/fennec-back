@@ -1,6 +1,7 @@
 package com.comunidade.dto;
 
 import java.io.Serializable;
+import java.time.LocalTime;
 import java.util.Date;
 
 import javax.validation.constraints.NotBlank;
@@ -15,7 +16,7 @@ public class MessageDTO implements Serializable  {
     
     private Integer idMensagem;
     @DateTimeFormat
-    private Date hora;
+    private LocalTime hora;
     @DateTimeFormat
     private Date data;
     @NotBlank
@@ -35,11 +36,11 @@ public class MessageDTO implements Serializable  {
         this.idMensagem = idMensagem;
     }
 
-    public Date getHora() {
+    public LocalTime getHora() {
         return this.hora;
     }
 
-    public void setHora(Date hora) {
+    public void setHora(LocalTime hora) {
         this.hora = hora;
     }
 
@@ -84,7 +85,7 @@ public class MessageDTO implements Serializable  {
         this.usuarioId = usuarioId;
     }
 
-    public MessageDTO(Integer idMensagem, Date hora, Date data, String texto, String tipo, String status, Usuario usuarioId) {
+    public MessageDTO(Integer idMensagem, LocalTime hora, Date data, String texto, String tipo, String status, Usuario usuarioId) {
         super();
         this.idMensagem = idMensagem;
         this.hora = hora;
