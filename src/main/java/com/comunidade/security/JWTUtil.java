@@ -2,6 +2,9 @@ package com.comunidade.security;
 
 import java.util.Date;
 
+import com.comunidade.domain.Usuario;
+import com.comunidade.repositories.UserRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -13,17 +16,21 @@ import io.jsonwebtoken.SignatureAlgorithm;
 @Component
 public class JWTUtil {
 	
+
+	@Autowired
+	private UserRepository repo;
+
 	@Value("${jwt.secret}")
 	private String secret;
 
 	@Value("${jwt.expiration}")
 	private Long expiration;
 	
-	public String generateToken(String email) {	
+	public String generateToken(String tell) {	
 		
 		
 		return Jwts.builder()
-				.setSubject(email)
+				.setSubject(tell)
 				.setExpiration(new Date(System.currentTimeMillis() + expiration))
 				.signWith(SignatureAlgorithm.HS512, secret.getBytes())
 				.compact();
@@ -49,6 +56,22 @@ public class JWTUtil {
 		}
 		return null;
 	}
+
+
+	
+	public Usuario getUser(String token) {
+		Claims claims = getClaims(token);
+		Usuario obj = repo.findByTell(claims.getSubject());
+		if (claims != null) {
+			System.out.println("deu bom + -"+ obj.getName());
+			return obj;
+			// return claims.getSubject();
+		}
+		System.out.println("deu ruim");
+		return null;
+	}
+
+
 	
 	private Claims getClaims(String token) {
 		try {
