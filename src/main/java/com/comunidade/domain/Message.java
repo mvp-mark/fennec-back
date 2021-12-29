@@ -2,9 +2,11 @@ package com.comunidade.domain;
 
 import java.io.Serializable;
 import java.util.Date;
-// import java.sql.Time;
+import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Set;
 
 import javax.persistence.*;
@@ -21,9 +23,11 @@ public class Message implements Serializable {
     @Column(name = "idMensagem")
     private Integer idMensagem;
 
-    @JsonFormat(pattern = "HH:mm:ss")
-    private Date hora;
+    @Column(columnDefinition = "TIME")
+    @JsonFormat(pattern = "HH:mm:ss",timezone = "GMT-04:00")
+    private LocalTime hora;
 
+    @Column(columnDefinition = "DATE")
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date data;
 
@@ -42,20 +46,30 @@ public class Message implements Serializable {
     private Usuario usuarioId;
 
 
+    public Message(){}
+    
     public Message(String string, String string2, String string3, Object object){
 
     }
-    public Message(String texto, String tipo, String status, Date data, Date hora, Usuario usuarioId) throws ParseException{
+    public Message(String texto, String tipo, String status, Date data, LocalTime hora, Usuario usuarioId) throws ParseException{
         Date date =  new Date();
         String str = new SimpleDateFormat("yyyy-MM-dd").format(date);
-                    
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String str2 = new SimpleDateFormat("HH:mm").format(date);
+        java.sql.Time sqlTime = new Time(new Date().getTime());
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss[.nnnnnnn]");
+        LocalTime now = LocalTime.now();
+        String timeString = now.format(formatter);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");      
         Date c = sdf.parse(str);	
+        LocalTime h = LocalTime.parse(timeString);
+        System.out.println("HORA: "+ h);
         this.texto=texto;
         this.tipo = tipo;
         this.status = status;
         this.data = c;
-        this.hora = c;
+        this.hora = h;
         this.usuarioId = usuarioId;
     }
 
@@ -72,11 +86,11 @@ public class Message implements Serializable {
         this.idMensagem = idMensagem;
     }
 
-    public Date getHora() {
+    public LocalTime getHora() {
         return this.hora;
     }
 
-    public void setHora(Date hora) {
+    public void setHora(LocalTime hora) {
         this.hora = hora;
     }
 

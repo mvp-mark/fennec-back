@@ -2,6 +2,8 @@ package com.comunidade.services;
 
 import java.text.ParseException;
 
+import java.util.List;
+
 import com.comunidade.domain.Message;
 import com.comunidade.dto.MessageDTO;
 import com.comunidade.exceptions.DataIntegrityException;
@@ -30,6 +32,11 @@ public class MessageService {
 		}
 		return obj;
 	}
+
+	public List<Message> findAll() {
+		return repo.findAll();
+	}
+	
 	
     public Message fromDTO(MessageDTO objDto) throws ParseException {
 		return new Message(
