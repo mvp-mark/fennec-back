@@ -76,6 +76,15 @@ public class UsersService {
 		}
 		return obj;
 	}	
+	public Usuario findByTell(String tell) {
+
+		Usuario obj = repo.findByTell(tell);
+		if (obj == null) {
+			throw new ObjectNotFoundException(
+					"Objeto não encontrado! Id: , Tipo: " + Usuario.class.getName());
+		}
+		return obj;
+	}	
 
 	
 	public UserPagination findByPerfil(int perfil, Pageable pageable) {
@@ -91,7 +100,7 @@ public class UsersService {
 
 	
 	public Usuario fromDTO(UsuarioDTO objDto) {
-		Usuario cli = new Usuario(null, objDto.getName(), objDto.getEmail(), 
+		Usuario cli = new Usuario(null, objDto.getName(), objDto.getRg(),objDto.getBirthDay(),objDto.getTell(),objDto.getCpf(), objDto.getEmail(), 
 				pe.encode(objDto.getPassword()), objDto.getTipo(),objDto.getValidated(),
 				objDto.getIsLead(),objDto.getUrlLatter(),objDto.getUrlLinkedin(),objDto.getAverageRating());
 

@@ -1,6 +1,7 @@
 package com.comunidade.domain;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -16,10 +17,13 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 
 import com.comunidade.enums.Perfil;
 import com.comunidade.enums.Status;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import org.hibernate.validator.constraints.br.CPF;
 
 @Entity
 public class Usuario implements Serializable {
@@ -28,53 +32,108 @@ public class Usuario implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
-	
+
 	private String name;
+
+	@Column(unique=true)
+	private String rg;
+
+	private Date birthDay;
+	@Column(unique=true)
+	private String tell;
 	
+	@CPF
+	@Column(unique=true)
+	private String cpf;
+
 	@Column(unique = true)
 	private String email;
-	
+
 	@JsonIgnore
 	private String password;
-	
+
 	private Boolean validated;
-	
+
 	private Boolean isLead;
-	
+
 	private float averageRating;
-	
+
 	private Integer statusUser;
-	
+
 	private String urlLatter;
-	
+
 	private String urlLinkedin;
-	
-	@ElementCollection(fetch=FetchType.EAGER)
-	@CollectionTable(name="PERFIS")
+
+	@JsonIgnore
+	@OneToMany(mappedBy = "usuarioId")
+
+	private Set<Message> messages = new HashSet<>();
+
+	public Boolean isValidated() {
+		return this.validated;
+	}
+
+	public Boolean isIsLead() {
+		return this.isLead;
+	}
+
+	public void setStatusUser(Integer statusUser) {
+		this.statusUser = statusUser;
+	}
+
+	public Set<Message> getMessages() {
+		return this.messages;
+	}
+
+	public void setMessages(Set<Message> messages) {
+		this.messages = messages;
+	}
+
+	public Set<Invites> getInvites() {
+		return this.invites;
+	}
+
+	public void setInvites(Set<Invites> invites) {
+		this.invites = invites;
+	}
+
+	public Set<Squad> getSquads() {
+		return this.squads;
+	}
+
+	public void setSquads(Set<Squad> squads) {
+		this.squads = squads;
+	}
+
+	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(name = "PERFIS")
 	private Set<Integer> perfis = new HashSet<>();
-	
+
 	@ManyToMany
-	@JoinTable(
-			  name = "invites_users", 
-			  joinColumns = @JoinColumn(name = "user_id"), 
-			  inverseJoinColumns = @JoinColumn(name = "invite_id"))
-    Set<Invites> invites;
-	
+	@JoinTable(name = "invites_users", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "invite_id"))
+	Set<Invites> invites;
+
 	@ManyToMany
-	@JoinTable(
-			  name = "squad_users", 
-			  joinColumns = @JoinColumn(name = "user_id"), 
-			  inverseJoinColumns = @JoinColumn(name = "squad_id"))
-    Set<Squad> squads;
-	
+	@JoinTable(name = "squad_users", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "squad_id"))
+	Set<Squad> squads;
+
 	public Usuario() {
 	}
 
-	public Usuario(Integer id, String name, String email, String password, int perfil, Boolean isValidated, 
-			Boolean isLead,String urlLatter,String urlLinkedin,float averageRating) {
+	public Usuario(Integer id, String name,
+			String rg,
+			Date birthDay,
+			String tell,
+			String cpf,
+			String email, String password, int perfil, Boolean isValidated,
+			Boolean isLead, String urlLatter, String urlLinkedin, float averageRating) {
 		super();
 		this.id = id;
 		this.name = name;
+		this.rg = rg;
+		this.birthDay = birthDay;
+		this.tell = tell;
+		this.cpf = cpf;
 		this.email = email;
 		this.password = password;
 		this.validated = isValidated;
@@ -116,15 +175,14 @@ public class Usuario implements Serializable {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	
+
 	public Set<Perfil> getPerfis() {
 		return perfis.stream().map(x -> Perfil.toEnum(x)).collect(Collectors.toSet());
 	}
-	
+
 	public void addPerfil(Perfil perfil) {
 		perfis.add(perfil.getCod());
 	}
-
 
 	public Boolean getValidated() {
 		return validated;
@@ -132,8 +190,8 @@ public class Usuario implements Serializable {
 
 	public void setValidated(Boolean validated) {
 		this.validated = validated;
-	}	
-	
+	}
+
 	public Status getStatusUser() {
 		return Status.toEnum(statusUser);
 	}
@@ -141,7 +199,7 @@ public class Usuario implements Serializable {
 	public void addStatus(Status statusl) {
 		statusUser = statusl.getCod();
 	}
-	
+
 	public Boolean getIsLead() {
 		return isLead;
 	}
@@ -176,6 +234,38 @@ public class Usuario implements Serializable {
 
 	public void setPerfis(Set<Integer> perfis) {
 		this.perfis = perfis;
+	}
+
+	public String getRg() {
+		return this.rg;
+	}
+
+	public void setRg(String rg) {
+		this.rg = rg;
+	}
+
+	public Date getBirthDay() {
+		return this.birthDay;
+	}
+
+	public void setBirthDay(Date birthDay) {
+		this.birthDay = birthDay;
+	}
+
+	public String getTell() {
+		return this.tell;
+	}
+
+	public void setTell(String tell) {
+		this.tell = tell;
+	}
+
+	public String getCpf() {
+		return this.cpf;
+	}
+
+	public void setCpf(String cpf) {
+		this.cpf = cpf;
 	}
 
 	@Override
