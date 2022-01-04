@@ -1,6 +1,7 @@
 package com.comunidade.dto;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -21,6 +22,8 @@ import com.comunidade.enums.Perfil;
 import com.comunidade.enums.Status;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import org.hibernate.validator.constraints.br.CPF;
+
 
 public class UsuarioDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -31,6 +34,14 @@ public class UsuarioDTO implements Serializable {
 	private String name;	
 
 	private String email;		
+
+	private String rg;		
+
+	private Date birthDay;		
+
+	private String tell;		
+	
+	private String cpf;		
 
 	private String password;
 	
@@ -51,10 +62,18 @@ public class UsuarioDTO implements Serializable {
 	public UsuarioDTO() {
 	}
 
-	public UsuarioDTO(Integer id, String name, String email, String password, int tipo, Boolean isValidated, Boolean isLead) {
+	public UsuarioDTO(Integer id, String name,
+	String rg,
+	Date birthDay,
+	String tell,
+	String cpf, String email, String password, int tipo, Boolean isValidated, Boolean isLead) {
 		super();
 		this.id = id;
 		this.name = name;
+		this.rg = rg;
+		this.birthDay = birthDay;
+		this.tell = tell;
+		this.cpf = cpf;
 		this.email = email;
 		this.password = password;
 		this.validated = isValidated;
@@ -155,6 +174,50 @@ public class UsuarioDTO implements Serializable {
 		this.urlLinkedin = urlLinkedin;
 	}
 
+
+
+	public String getRg() {
+		return this.rg;
+	}
+
+	public void setRg(String rg) {
+		this.rg = rg;
+	}
+
+	public Date getBirthDay() {
+		return this.birthDay;
+	}
+
+	public void setBirthDay(Date birthDay) {
+		this.birthDay = birthDay;
+	}
+
+	public String getTell() {
+		return this.tell;
+	}
+
+	public void setTell(String tell) {
+		this.tell = tell;
+	}
+
+	public String getCpf() {
+		return this.cpf;
+	}
+
+	public void setCpf(String cpf) {
+		this.cpf = cpf;
+	}
+
+	public Boolean isValidated() {
+		return this.validated;
+	}
+
+	public Boolean isIsLead() {
+		return this.isLead;
+	}
+	public void setStatusUser(Integer statusUser) {
+		this.statusUser = statusUser;
+	}
 
 	@Override
 	public int hashCode() {

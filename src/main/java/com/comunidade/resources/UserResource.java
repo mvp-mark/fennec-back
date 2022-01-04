@@ -2,6 +2,8 @@ package com.comunidade.resources;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -56,7 +58,7 @@ public class UserResource {
 	}
 	
 	@RequestMapping(method=RequestMethod.POST)
-	public ResponseEntity<Usuario> insert(@RequestBody UsuarioDTO objDto) {
+	public ResponseEntity<Usuario> insert(@RequestBody @Valid UsuarioDTO objDto) {
 		Usuario obj = service.fromDTO(objDto);
 		obj = service.insert(obj);
 		return ResponseEntity.ok().body(obj);
