@@ -7,6 +7,7 @@ import java.util.Date;
 import javax.validation.constraints.NotBlank;
 
 import com.comunidade.domain.Usuario;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -23,6 +24,7 @@ public class MessageDTO implements Serializable  {
     private String texto;
     private String tipo;
     private String status;
+    @JsonIgnore
     private Usuario usuarioId;
     
     public MessageDTO() {
