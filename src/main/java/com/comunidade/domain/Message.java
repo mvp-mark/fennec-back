@@ -11,41 +11,63 @@ import java.util.Set;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ser.FilterProvider;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
 
 @Entity
 @Table(name = "Mensagens")
 public class Message implements Serializable {
 
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idMensagem")
     private Integer idMensagem;
-
+    
     @Column(columnDefinition = "TIME")
     @JsonFormat(pattern = "HH:mm:ss",timezone = "GMT-04:00")
     private LocalTime hora;
-
+    
     @Column(columnDefinition = "DATE")
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date data;
-
+    
     @Column(name = "texto", columnDefinition = "TEXT")
     private String texto;
-
+    
     @Column(name = "tipo")
     private String tipo;
-
+    
     @Column(name = "status")
     private String status;
+    
 
-
+    
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "usuario_id", referencedColumnName = "id")
+    @JsonIgnoreProperties(value = {"rg",
+    "birthDay",
+    "tell",
+    "cpf",
+    "email",
+    "validated",
+    "isLead",
+    "averageRating",
+    "statusUser",
+    "urlLatter",
+    "urlLinkedin",
+    "perfis",
+    "invites",
+    "squads",})
     private Usuario usuarioId;
-
-
+    
+    
     public Message(){}
     
     public Message(String string, String string2, String string3, Object object){

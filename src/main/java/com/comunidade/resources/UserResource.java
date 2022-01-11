@@ -51,9 +51,14 @@ public class UserResource {
 	}
 	
 	
-	@RequestMapping(value="/email", method=RequestMethod.GET)
-	public ResponseEntity<Usuario> find(@RequestParam(value="value") String email) {
+	@RequestMapping(value="/email/{email}", method=RequestMethod.GET)
+	public ResponseEntity<Usuario> find(@PathVariable String email) {
 		Usuario obj = service.findByEmail(email);
+		return ResponseEntity.ok().body(obj);
+	}
+	@RequestMapping(value="/tell/{tell}", method=RequestMethod.GET)
+	public ResponseEntity<Usuario> findTell(@PathVariable String tell) {
+		Usuario obj = service.findByTell(tell);
 		return ResponseEntity.ok().body(obj);
 	}
 	

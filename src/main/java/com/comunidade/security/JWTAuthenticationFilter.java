@@ -9,6 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -16,15 +17,25 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.comunidade.domain.Usuario;
 import com.comunidade.dto.CredenciaisDTO;
+import com.comunidade.repositories.UserRepository;
+import com.comunidade.services.UsersService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-
+    
     private AuthenticationManager authenticationManager;
-
+    
     private JWTUtil jwtUtil;
-
+    
+    
+    @Autowired
+    private UserRepository repo;
+    
+    // public JWTAuthenticationFilter(UserRepository userRepository) {
+    //     this.userRepository = userRepository;
+    // }
     public JWTAuthenticationFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil) {
         setAuthenticationFailureHandler(new JWTAuthenticationFailureHandler());
         this.authenticationManager = authenticationManager;
@@ -56,6 +67,9 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             Authentication auth) throws IOException, ServletException {
 
         String username = ((UserSS) auth.getPrincipal()).getUsername();
+
+        //  Usuario obj = repo.findByTell(username);
+        // System.out.println("User: "+obj.getEmail());
         String token = jwtUtil.generateToken(username);
         res.addHeader("Authorization", "Bearer " + token);
         res.addHeader("access-control-expose-headers", "Authorization");

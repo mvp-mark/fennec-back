@@ -22,7 +22,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		if (cli == null) {
 			throw new UsernameNotFoundException(tell);
 		}
-		return new UserSS(cli.getId(), cli.getTell(), cli.getPassword(), cli.getPerfis());
+		return new UserSS(cli.getId(), cli.getTell(), cli.getPassword(), cli.getPerfis(), repo);
 	}
 	// public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 	// 	Usuario cli = repo.findByEmail(email);
