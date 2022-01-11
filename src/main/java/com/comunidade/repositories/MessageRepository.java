@@ -14,8 +14,8 @@ import com.comunidade.domain.Message;
 @Repository
 public interface MessageRepository extends JpaRepository<Message, Integer> {
 
-    @Query("SELECT * FROM mensagens order by id_mensagem desc")Page<Message> search(
-        @Param("searchTerm") String searchTerm, 
-        Pageable pageable);
+    // @Query("SELECT * FROM mensagens order by id_mensagem desc")Page<Message> search(
+    //     @Param("searchTerm") String searchTerm, 
+    //     Pageable pageable);
 
 }

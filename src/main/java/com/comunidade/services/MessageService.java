@@ -38,39 +38,32 @@ public class MessageService {
 		return obj;
 	}
 
-	// public List<Message> findAll() {
-	// 	return repo.findAll();
-	// }
+	public List<Message> findAll() {
+		return  repo.findAll(Sort.by(Sort.Direction.DESC,"idMensagem"));
+
+	}
 	
 
-    public Page<Message> search(
-            String searchTerm,
-            int page,
-            int size) {
-        PageRequest pageRequest = PageRequest.of(
-                page,
-                size,
-                Sort.Direction.ASC,
-                "name");
+ public Page<Message> listAllWithPagination(int offset, int pageSize){
+ Page<Message> messages = repo.findAll(PageRequest.of(offset, pageSize).withSort(Sort.by(Sort.Direction.DESC,"idMensagem")));
 
-        return repo.search(
-                searchTerm.toLowerCase(),
-                pageRequest);
-    }
+//  repo.findAll(Sort.by(Sort.Direction.DESC,field));
+ return messages;
+ }
 
-	public Page<Message> findAll() {
-        int page = 0;
-        int size = 10;
-        PageRequest pageRequest = PageRequest.of(
-                page,
-                size,
-                Sort.Direction.ASC,
-                "id_mensagem");
-        return new PageImpl<>(
+	// public Page<Message> findAll() {
+    //     int page = 0;
+    //     int size = 10;
+    //     PageRequest pageRequest = PageRequest.of(
+    //             page,
+    //             size,
+    //             Sort.Direction.ASC,
+    //             "id_mensagem");
+    //     return new PageImpl<>(
 
-				repo.findAll(), 
-                pageRequest, size);
-    }
+	// 			repo.findAll(), 
+    //             pageRequest, size);
+    // }
 	
 	
     public Message fromDTO(MessageDTO objDto) throws ParseException {
