@@ -4,6 +4,7 @@ import java.util.Date;
 
 import com.comunidade.domain.Usuario;
 import com.comunidade.repositories.UserRepository;
+import com.comunidade.services.UsersService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,11 +27,18 @@ public class JWTUtil {
 	@Value("${jwt.expiration}")
 	private Long expiration;
 	
+	@Autowired
+	private UsersService service;
+
 	public String generateToken(String tell) {	
+
+		// Usuario obj = repo.findByTell(tell);
+
 		
-		
+		Usuario obj = repo.findByTell(tell);
 		return Jwts.builder()
-				.setSubject(tell)
+				.setSubject(obj.getTell())
+				// .setPayload()
 				.setExpiration(new Date(System.currentTimeMillis() + expiration))
 				.signWith(SignatureAlgorithm.HS512, secret.getBytes())
 				.compact();

@@ -8,8 +8,13 @@ import com.comunidade.domain.Message;
 import com.comunidade.dto.MessageDTO;
 import com.comunidade.exceptions.DataIntegrityException;
 import com.comunidade.repositories.MessageRepository;
+import org.springframework.data.domain.Sort;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,8 +39,31 @@ public class MessageService {
 	}
 
 	public List<Message> findAll() {
-		return repo.findAll();
+		return  repo.findAll(Sort.by(Sort.Direction.DESC,"idMensagem"));
+
 	}
+	
+
+ public Page<Message> listAllWithPagination(int offset, int pageSize){
+ Page<Message> messages = repo.findAll(PageRequest.of(offset, pageSize).withSort(Sort.by(Sort.Direction.DESC,"idMensagem")));
+
+//  repo.findAll(Sort.by(Sort.Direction.DESC,field));
+ return messages;
+ }
+
+	// public Page<Message> findAll() {
+    //     int page = 0;
+    //     int size = 10;
+    //     PageRequest pageRequest = PageRequest.of(
+    //             page,
+    //             size,
+    //             Sort.Direction.ASC,
+    //             "id_mensagem");
+    //     return new PageImpl<>(
+
+	// 			repo.findAll(), 
+    //             pageRequest, size);
+    // }
 	
 	
     public Message fromDTO(MessageDTO objDto) throws ParseException {

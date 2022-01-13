@@ -17,18 +17,18 @@ services:
     networks:
       - postgres-compose-network
       
-  pgadmin-compose:
-    image: dpage/pgadmin4
-    env_file: .env
-    environment:
-      PGADMIN_DEFAULT_EMAIL: $PGADMIN_EMAIL
-      PGADMIN_DEFAULT_PASSWORD: $PGADMIN_PASS
-    ports:
-      - "8000:80"
-    depends_on:
-      - postgres
-    networks:
-      - postgres-compose-network
+  # pgadmin-compose:
+  #   image: dpage/pgadmin4
+  #   env_file: .env
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: $PGADMIN_EMAIL
+  #     PGADMIN_DEFAULT_PASSWORD: $PGADMIN_PASS
+  #   ports:
+  #     - "8000:80"
+  #   depends_on:
+  #     - postgres
+  #   networks:
+  #     - postgres-compose-network
 
 networks: 
   postgres-compose-network:

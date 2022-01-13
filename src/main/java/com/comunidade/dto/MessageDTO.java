@@ -7,6 +7,11 @@ import java.util.Date;
 import javax.validation.constraints.NotBlank;
 
 import com.comunidade.domain.Usuario;
+import com.fasterxml.jackson.annotation.JsonFilter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.ser.FilterProvider;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -14,6 +19,11 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 public class MessageDTO implements Serializable  {
     
+    
+    SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.filterOutAllExcept("name", "id");
+    FilterProvider filters = new SimpleFilterProvider().addFilter("UserInfo", filter);
+    
+
     private Integer idMensagem;
     @DateTimeFormat
     private LocalTime hora;
@@ -23,6 +33,7 @@ public class MessageDTO implements Serializable  {
     private String texto;
     private String tipo;
     private String status;
+    @JsonFilter("UserInfo")
     private Usuario usuarioId;
     
     public MessageDTO() {
