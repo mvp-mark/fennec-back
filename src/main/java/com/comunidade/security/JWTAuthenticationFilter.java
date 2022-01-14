@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -36,9 +37,10 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     // public JWTAuthenticationFilter(UserRepository userRepository) {
     //     this.userRepository = userRepository;
     // }
-    public JWTAuthenticationFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil) {
+    public JWTAuthenticationFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil, ApplicationContext ctx) {
         setAuthenticationFailureHandler(new JWTAuthenticationFailureHandler());
         this.authenticationManager = authenticationManager;
+        this.repo = ctx.getBean(UserRepository.class);
         this.jwtUtil = jwtUtil;
     }
 
@@ -67,17 +69,22 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             Authentication auth) throws IOException, ServletException {
 
         String username = ((UserSS) auth.getPrincipal()).getUsername();
-
-        //  Usuario obj = repo.findByTell(username);
-        // System.out.println("User: "+obj.getEmail());
+        
+        
+        
+        Usuario obj = repo.findByTell(username);
+        System.out.println("User: "+obj.getEmail());
+        
         String token = jwtUtil.generateToken(username);
+        
         res.addHeader("Authorization", "Bearer " + token);
         res.addHeader("access-control-expose-headers", "Authorization");
 
         res.setCharacterEncoding("UTF-8");
         res.getWriter().write(
-                "{\"" + "Token" + "\":\"" + "Bearer " + token + "\"}");
-
+        		"{\"" + "Token" + "\":\"" + "Bearer " + token + "\","
+                		+ "\"" + "tell" + "\":\"" + obj.getTell()+ "\","
+				        + "\"" + "nome" + "\":\"" + obj.getName() + "\"}");
     }
 
     private class JWTAuthenticationFailureHandler implements AuthenticationFailureHandler {
