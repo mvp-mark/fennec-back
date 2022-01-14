@@ -10,6 +10,7 @@ services:
       POSTGRES_PASSWORD: $PG_PASS
       POSTGRES_USER: $PG_USER
       PGDATA: /data/postgres
+        - TZ=America/Manaus
     volumes:
        - ./db:/data/postgres
     ports:
