@@ -9,7 +9,8 @@ import com.comunidade.dto.MessageDTO;
 import com.comunidade.exceptions.DataIntegrityException;
 import com.comunidade.repositories.MessageRepository;
 import org.springframework.data.domain.Sort;
-
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
 import org.springframework.data.domain.Page;
@@ -26,6 +27,8 @@ public class MessageService {
 
 
     @Transactional
+	@MessageMapping("/message")
+	@SendTo("/topic/messages")
 	public Message insert(Message obj) {
 		obj.setIdMensagem(null);
 		System.out.println("TeXTO"+ obj.getTexto());
