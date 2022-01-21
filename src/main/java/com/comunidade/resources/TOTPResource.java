@@ -28,22 +28,13 @@ public class TOTPResource {
         new Thread(new Runnable() {
         public void run() {
 
-            // Usuario user = event.getUser();
-            // System.out.println(user.getEmail());
-            // String token = UUID.randomUUID().toString();
-            // service.createVerificationToken(user, token);
-            
-            // String recipientAddress = user.getEmail();
-            // String subject = "Confirmação de Email";
-            // String confirmationUrl 
-            //   = event.getAppUrl() + "/api/cadastro/confirmarregistro?token=" + token;
-            //String message = messages.getMessage("message.regSucc", null, event.getLocale());
-            
+         
             SimpleMailMessage email = new SimpleMailMessage();
             email.setTo(to);
+    
             email.setSubject("Atualização do Token da Fennec");
             email.setText("Click no link para atualizar o Token");
-            email.setText("\r\n" + "` <a href=\"http://3.12.228.3:5000/?token=`" + token);
+            email.setText("\r\n" + "click no link a seguir para atualizar o token da Fennec http://3.12.228.39:5000/?token=" + token);
             // email.setText(token);
             //Do whatever
             mailSender.send(email);
