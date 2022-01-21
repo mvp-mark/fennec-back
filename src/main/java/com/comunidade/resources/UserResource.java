@@ -66,6 +66,9 @@ public class UserResource {
 	public ResponseEntity<Usuario> insert(@RequestBody @Valid UsuarioDTO objDto) {
 		Usuario obj = service.fromDTO(objDto);
 		obj = service.insert(obj);
+		
+		
+		
 		return ResponseEntity.ok().body(obj);
 	}
 	

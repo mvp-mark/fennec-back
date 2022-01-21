@@ -26,6 +26,7 @@ public class Invites implements Serializable {
 	private String UUID;
 	private Usuario userId;
 	private String receiverEmail;
+	private String level;
 	private Date expirationDate;
 	private Date acceptDate;
 	private String urlInvite;

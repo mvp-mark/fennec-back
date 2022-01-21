@@ -44,9 +44,17 @@ public class Message implements Serializable {
     @Column(name = "tipo")
     private String tipo;
     
+    @Column(name = "meio")
+    private String meio;
+    
+    @Column(name = "time")
+    private Time time;
+    
+    @Column(name = "squad")
+    private Time squad;
+    
     @Column(name = "status")
     private String status;
-    
 
     
     @ManyToOne(cascade = CascadeType.ALL)

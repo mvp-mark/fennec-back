@@ -3,14 +3,12 @@ package com.comunidade.repositories;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.comunidade.domain.ConnDevices;
 import com.comunidade.domain.Squad;
+import com.comunidade.domain.Time;
 
-public interface SquadRepository extends JpaRepository<Squad, Integer> {
+public interface TimeRepository extends JpaRepository<Time, Integer> {
 	
 	@Transactional(readOnly=true)
-	public Squad findById(Long id);
+	public Time findById(Long id);
 	
-
 }
-

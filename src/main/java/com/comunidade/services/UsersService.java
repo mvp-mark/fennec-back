@@ -40,7 +40,7 @@ public class UsersService {
 	public Usuario insert(Usuario obj) {
 		obj.setId(null);
 		try {
-		obj = repo.save(obj);
+			obj = repo.save(obj);
 		}catch (Exception e) {
 			// TODO: handle exception
 			throw new DataIntegrityException("Erro de inserção de usuário");
@@ -50,6 +50,10 @@ public class UsersService {
 	
 	public Usuario update(Usuario obj) {
 		Usuario newObj = find(obj.getId());		
+		return repo.save(obj);
+	}
+	
+	public Usuario updateAllData(Usuario obj) {		
 		return repo.save(obj);
 	}
 
@@ -108,4 +112,5 @@ public class UsersService {
 	}
 
 
+	
 }

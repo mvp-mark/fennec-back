@@ -1,11 +1,14 @@
 package com.comunidade.domain;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -17,11 +20,16 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import com.comunidade.enums.Perfil;
 import com.comunidade.enums.Status;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import org.hibernate.validator.constraints.br.CPF;
 
@@ -35,15 +43,20 @@ public class Usuario implements Serializable {
 
 	private String name;
 
+	
 	@Column(unique=true)
 	private String rg;
-
+	
+	
 	private Date birthDay;
+	
+	
 	@Column(unique=true)
 	private String tell;
 	
 	@CPF
 	@Column(unique=true)
+	@JsonIgnore
 	private String cpf;
 
 	@Column(unique = true)
@@ -51,18 +64,140 @@ public class Usuario implements Serializable {
 
 	@JsonIgnore
 	private String password;
-
+	
+	@JsonIgnore
 	private Boolean validated;
-
+	
+	@JsonIgnore
 	private Boolean isLead;
-
+	
+	
 	private float averageRating;
-
+	
+	@JsonIgnore
 	private Integer statusUser;
-
+	
 	private String urlLatter;
-
+	
 	private String urlLinkedin;
+
+	private String nivel;
+
+	@JsonIgnore
+	@ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "master_id", referencedColumnName = "id")
+    @JsonIgnoreProperties(value = {"rg",
+    "birthDay",
+    "tell",
+    "cpf",
+    "email",
+    "validated",
+    "isLead",
+    "averageRating",
+    "statusUser",
+    "urlLatter",
+    "urlLinkedin",
+    "perfis",
+    "invites",
+    "squads",})
+    private Usuario masterid;
+	
+	public String getNivel() {
+		return nivel;
+	}
+
+	public void setNivel(String nivel) {
+		this.nivel = nivel;
+	}
+
+	public Usuario getMasterid() {
+		return masterid;
+	}
+
+	public void setMasterid(Usuario masterid) {
+		this.masterid = masterid;
+	}
+
+	public Usuario getSeniorid() {
+		return seniorid;
+	}
+
+	public void setSeniorid(Usuario seniorid) {
+		this.seniorid = seniorid;
+	}
+
+	public Usuario getJuniorid() {
+		return juniorid;
+	}
+
+	public void setJuniorid(Usuario juniorid) {
+		this.juniorid = juniorid;
+	}
+
+	public Usuario getAprendizid() {
+		return aprendizid;
+	}
+
+	public void setAprendizid(Usuario aprendizid) {
+		this.aprendizid = aprendizid;
+	}
+	
+	@JsonIgnore
+	@ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "senior_id", referencedColumnName = "id")
+    @JsonIgnoreProperties(value = {"rg",
+    "birthDay",
+    "tell",
+    "cpf",
+    "email",
+    "validated",
+    "isLead",
+    "averageRating",
+    "statusUser",
+    "urlLatter",
+    "urlLinkedin",
+    "perfis",
+    "invites",
+    "squads",})
+    private Usuario seniorid;
+	
+	@JsonIgnore
+	@ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "junior_id", referencedColumnName = "id")
+    @JsonIgnoreProperties(value = {"rg",
+    "birthDay",
+    "tell",
+    "cpf",
+    "email",
+    "validated",
+    "isLead",
+    "averageRating",
+    "statusUser",
+    "urlLatter",
+    "urlLinkedin",
+    "perfis",
+    "invites",
+    "squads",})
+    private Usuario juniorid;
+	
+	@JsonIgnore
+	@ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "aprendiz_id", referencedColumnName = "id")
+    @JsonIgnoreProperties(value = {"rg",
+    "birthDay",
+    "tell",
+    "cpf",
+    "email",
+    "validated",
+    "isLead",
+    "averageRating",
+    "statusUser",
+    "urlLatter",
+    "urlLinkedin",
+    "perfis",
+    "invites",
+    "squads",})
+    private Usuario aprendizid;
 
 	@JsonIgnore
 	@OneToMany(mappedBy = "usuarioId")
@@ -104,19 +239,32 @@ public class Usuario implements Serializable {
 	public void setSquads(Set<Squad> squads) {
 		this.squads = squads;
 	}
+	
+	public Set<Time> getTimes() {
+		return times;
+	}
+
+	public void setTimes(Set<Time> times) {
+		this.times = times;
+	}
 
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(name = "PERFIS")
 	private Set<Integer> perfis = new HashSet<>();
-
-	@ManyToMany
+	
+	@JsonIgnore
+	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "invites_users", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "invite_id"))
 	Set<Invites> invites;
 
-	@ManyToMany
-	@JoinTable(name = "squad_users", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "squad_id"))
-	Set<Squad> squads;
-
+	@JsonIgnore
+	@ManyToMany(mappedBy = "users")	
+	Set<Squad> squads = new HashSet<>();;
+	
+	@JsonIgnore
+	@ManyToMany(mappedBy = "users")	
+	Set<Time> times = new HashSet<>();
+	
 	public Usuario() {
 	}
 

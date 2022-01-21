@@ -12,51 +12,40 @@ import org.springframework.stereotype.Service;
 import com.comunidade.domain.Client;
 import com.comunidade.domain.Squad;
 import com.comunidade.domain.Time;
-import com.comunidade.dto.SquadDTO;
 import com.comunidade.dto.TimeDTO;
 import com.comunidade.exceptions.DataIntegrityException;
 import com.comunidade.exceptions.ObjectNotFoundException;
 import com.comunidade.repositories.SquadRepository;
-
+import com.comunidade.repositories.TimeRepository;
 
 @Service
-public class SquadService {
+public class TimeService {
 
 	@Autowired
-	private SquadRepository repo;
+	private TimeRepository repo;
 
-	public Squad find(Integer id) {
-		Optional<Squad> obj = repo.findById(id);
+	public Time find(Integer id) {
+		Optional<Time> obj = repo.findById(id);
 		return obj.orElseThrow(() -> new ObjectNotFoundException(
 				"Objeto não encontrado! Id: " + id + ", Tipo: " + Client.class.getName()));
 	}
 	
-	public Squad insert(Squad obj) {
+	public Time insert(Time obj) {
 		obj.setId(null);
 		return repo.save(obj);
 	}
 	
-	public List<Squad> saveAll(Squad obj) {
+	public List<Time> saveAll(Time obj) {
 		obj.setId(null);
 		return repo.saveAll(Arrays.asList(obj));
 	}
 	
-	public Squad fromDTO(SquadDTO objDto) {
-		Squad squad = new Squad(objDto.getId(), objDto.getName(), objDto.getDescription(),
-				objDto.getAverageRating(), objDto.getIsRandom(),
-				objDto.getCreationDate(), objDto.getLeadId(),
-				objDto.getStatus(), new HashSet<>(objDto.getUsers()),
-				objDto.getTime(), objDto.getVacancies()
-			);
-		//time.setDescription(objDto.getDescription());
-		//time.setName(objDto.getName());
-		return squad;
+	public List<Time> update(Time obj) {
+		return repo.saveAll(Arrays.asList(obj));
 	}
-	
 	
 	public void delete(Integer id) {
 		find(id);
-		System.out.println("id "+id);
 		try {
 			repo.deleteById(id);
 		}
@@ -65,15 +54,19 @@ public class SquadService {
 		}
 	}
 	
-	public List<Squad> findAll() {
+	public Time fromDTO(TimeDTO objDto) {
+		Time time = new Time(objDto.getId(),objDto.getDescription() ,
+				objDto.getName(), objDto.getAverageRating(),
+				objDto.getIsRandom(),objDto.getCreationDate(), 
+				objDto.getLeadId(),
+				objDto.getStatus(), new HashSet<>(objDto.getUsers()),objDto.getVacancies());
+		//time.setDescription(objDto.getDescription());
+		//time.setName(objDto.getName());
+		return time;
+	}
+	
+	public List<Time> findAll() {
 		return repo.findAll();
 	}
 
-	public List<Squad> update(Squad obj) {
-		return repo.saveAll(Arrays.asList(obj));
-	}
-	
-	public Squad updates(Squad obj) {
-		return repo.save(obj);
-	}
 }

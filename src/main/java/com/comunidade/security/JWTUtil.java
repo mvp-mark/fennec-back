@@ -65,7 +65,10 @@ public class JWTUtil {
 		return null;
 	}
 
-
+	public boolean ipValido(String addr){
+		
+		return false;
+	}
 	
 	public Usuario getUser(String token) {
 		Claims claims = getClaims(token);
