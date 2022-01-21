@@ -92,7 +92,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         res.getWriter().write(
         		"{\"" + "Token" + "\":\"" + "Bearer " + token + "\","
                 		+ "\"" + "tell" + "\":\"" + obj.getTell()+ "\","
-                		+ "\"" + "cpf" + "\":\"" + obj.getCpf()+ "\","
+                		+ "\"" + "email" + "\":\"" + obj.getEmail()+ "\","
 				        + "\"" + "nome" + "\":\"" + obj.getName() + "\"}");
     }
 
