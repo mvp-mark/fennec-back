@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.comunidade.domain.Usuario;
 import com.comunidade.dto.UserPagination;
 import com.comunidade.dto.UsuarioDTO;
+import com.comunidade.enums.Nivel;
 import com.comunidade.enums.Status;
 import com.comunidade.services.UsersService;
 
@@ -56,6 +57,7 @@ public class UserResource {
 		Usuario obj = service.findByEmail(email);
 		return ResponseEntity.ok().body(obj);
 	}
+	
 	@RequestMapping(value="/tell/{tell}", method=RequestMethod.GET)
 	public ResponseEntity<Usuario> findTell(@PathVariable String tell) {
 		Usuario obj = service.findByTell(tell);
@@ -65,10 +67,10 @@ public class UserResource {
 	@RequestMapping(method=RequestMethod.POST)
 	public ResponseEntity<Usuario> insert(@RequestBody @Valid UsuarioDTO objDto) {
 		Usuario obj = service.fromDTO(objDto);
+		
+		obj.setNivel(Nivel.toEnum(3));
+		
 		obj = service.insert(obj);
-		
-		
-		
 		return ResponseEntity.ok().body(obj);
 	}
 	
@@ -91,7 +93,6 @@ public class UserResource {
 		return ResponseEntity.noContent().build();
 	}
 
-
 	@RequestMapping(value="/{id}", method=RequestMethod.DELETE)
 	public ResponseEntity<Usuario> delete(@PathVariable Integer id) {
 		Usuario usuario = service.find(id);		
@@ -99,8 +100,6 @@ public class UserResource {
 		usuario = service.update(usuario);
 		return ResponseEntity.ok().body(usuario);
 	}
-	
-
 	
 	@RequestMapping(method=RequestMethod.GET)
 	public ResponseEntity<List<Usuario>> findAll() {
