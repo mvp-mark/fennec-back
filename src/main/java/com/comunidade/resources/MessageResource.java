@@ -1,6 +1,8 @@
 package com.comunidade.resources;
 
 import com.comunidade.services.MessageService;
+import com.comunidade.services.SquadService;
+import com.comunidade.services.TimeService;
 
 import java.util.Collections;
 import java.util.List;
@@ -10,13 +12,17 @@ import java.text.ParseException;
 import javax.validation.Valid;
 
 import com.comunidade.domain.Message;
+import com.comunidade.domain.Squad;
+import com.comunidade.domain.Time;
 import com.comunidade.domain.Usuario;
 import com.comunidade.dto.APIResponse;
 import com.comunidade.dto.MessageDTO;
+import com.comunidade.enums.Meio;
 import com.comunidade.security.JWTUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,75 +37,229 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(value = "/feed")
 public class MessageResource {
-
 	private static final int APIResponse = 0;
 
 	@Autowired
 	private MessageService service;
 
 	@Autowired
+	private TimeService tservice;
+	
+	@Autowired
+	private SquadService sservice;
+	@Autowired
 	private JWTUtil jwt;
 
 	// @RequestMapping(value="/send",method=RequestMethod.POST)
 	@PostMapping("/send")
-	public ResponseEntity<Message> insert(@RequestBody @Valid MessageDTO objDto,
+	public ResponseEntity insert(@RequestBody @Valid MessageDTO objDto,
 			@RequestHeader(name = "Authorization") String token) throws ParseException {
-				System.out.println("teste, texto: " + token);
-				Usuario user =jwt.getUser(token.substring(7));
-				objDto.setUsuarioId(user);
-				Message obj = service.fromDTO(objDto);
+		try {
+			System.out.println("teste, texto: " + token);
+			Usuario user =jwt.getUser(token.substring(7));
+			objDto.setUsuarioId(user);
+			Message obj = service.fromDTO(objDto);
+			obj.setMeio(Meio.FEEDGERAL);
+			//Atribuir a mensagem sempre para o time geral
+			
+			obj = service.insert(obj);
+			return ResponseEntity.ok().body(obj);
+		}catch(Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao, verifique seus dados");
+		}
 		
-
-		obj = service.insert(obj);
-		return ResponseEntity.ok().body(obj);
+		
+	}
+	
+	@PostMapping("/send/{meio}")
+	public ResponseEntity insertprocedure(@RequestBody @Valid MessageDTO objDto,
+			@RequestHeader(name = "Authorization") String token,
+			@PathVariable int meio
+		) throws ParseException {
+		
+		try {
+			System.out.println("teste, texto: " + token);
+			Usuario user =jwt.getUser(token.substring(7));
+			objDto.setUsuarioId(user);
+			Message obj = service.fromDTO(objDto);
+			
+			//precisa verificar as permissões do usuario ao 
+			//enviar a mensagem
+			
+			//verificar se usuario pertence ao time ou nao
+			
+			switch(meio) {
+			case (0): //feedgeral enum(1)
+				//
+				obj.setMeio(Meio.FEEDGERAL);
+				obj = service.insert(obj);
+				break;
+			case (1): //time enum(2)
+				//
+				obj.setMeio(Meio.TIME);
+				Time time = tservice.find(obj.getTime().getId());
+				obj.setTime(time);
+				if(time.getUsers().contains(user)) {
+					System.out.println("user ok");
+					obj = service.insert(obj);
+				}else {
+					//not ok ;-;
+				}
+				break;
+			
+			case (2): //squad enum(3)
+				//
+				obj.setMeio(Meio.SQUAD);
+				Squad squad = sservice.find(obj.getSquad().getId());
+				obj.setSquad(squad);
+				if(squad.getUsers().contains(user)) {
+					System.out.println("user ok");
+					obj = service.insert(obj);
+				}else {
+					//not ok ;-;
+				}
+				break;
+				
+			default:
+				//
+				break;
+			}
+			
+			return ResponseEntity.ok().body(obj);
+			
+		}catch(Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao, verifique seus dados");
+		}
+		
 	}
 
 	@RequestMapping(method=RequestMethod.GET)
-	public ResponseEntity<List<Message>> findAll() {
-		List<Message> list = service.findAll();
-
+	public ResponseEntity findAll() {
 		
-
-
-		return ResponseEntity.ok().body(list);
+		try {
+			List<Message> list = service.findAll();
+			
+			return ResponseEntity.ok().body(list);
+			
+		}catch(Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao, verifique seus dados");
+		}
+		
 	}
 
-
-// @GetMapping("/pagination/{offset}/{pageSize}")
-// public ResponseEntity<Page<Message>> listAllWithPagination(@PathVariable int offset, @PathVariable int pageSize)  {
-	// 	// List<Message> list = service.findAll();
-	// 	// Collections.reverse(list);
-	// 	Page<Message> messageWithPagination = service.listAllWithPagination(offset, pageSize);
-	
-	
-	
-	// 	return ResponseEntity.ok().body(messageWithPagination);
 	@GetMapping("/pagination/{offset}/{pageSize}")
-	private ResponseEntity<Page<Message>> getListAllWithPagination(@PathVariable int offset, @PathVariable int pageSize) {
-        Page<Message> messagesWithPagination = service.listAllWithPagination(offset, pageSize);
+	private ResponseEntity getListAllWithPagination(
+			@PathVariable int offset, @PathVariable int pageSize) {		
+		try {
+			Page<Message> messagesWithPagination = service.listAllWithPagination(offset, pageSize);
+			
+			return  ResponseEntity.ok().body(messagesWithPagination);
+			
+		}catch(Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao, verifique seus dados");
+		}
+		
+	}
+
+	@GetMapping("/pagbymaster/{offset}/{pageSize}")
+	private ResponseEntity getListMasterWithPagination(
+			@PathVariable int offset, @PathVariable int pageSize,
+			@RequestHeader(name = "Authorization") String token) {
+		try {
+			Usuario user =jwt.getUser(token.substring(7));
+		
+			String master = user.getHierarquia().split("/")[0];
+			Page<Message> messagesWithPagination = service.listByMasterWithPagination(master,offset, pageSize);
+			
+			return  ResponseEntity.ok().body(messagesWithPagination);
+			
+		}catch(Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao, verifique seus dados");
+		}
+		
+	}
+	
+	@GetMapping("/pagbymastertom/{offset}/{pageSize}")
+	private ResponseEntity getListMastertoMasterWithPagination(
+			@PathVariable int offset, @PathVariable int pageSize,
+			@RequestHeader(name = "Authorization") String token) {
+		try {
+			Usuario user =jwt.getUser(token.substring(7));
+		
+			String master = user.getId().toString();
+			Page<Message> messagesWithPagination = service.listByMastertoMasterWithPagination(master,offset, pageSize);
+			
+			
+			return  ResponseEntity.ok().body(messagesWithPagination);
+			
+		}catch(Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao, verifique seus dados");
+		}
+		
+	}
+	
+	@GetMapping("/pagbytime/{offset}/{pageSize}/{timeid}")
+	private ResponseEntity getListByTime(
+			@PathVariable int offset, @PathVariable int pageSize, @PathVariable int timeid,
+			@RequestHeader(name = "Authorization") String token) {
+		
+		try {
+			Usuario user =jwt.getUser(token.substring(7));
+			
+			Time time = tservice.find(timeid);
+			if(time.getUsers().contains(user)) {
+				Page<Message> messagesWithPagination = service.listAllWithPaginationByTime(timeid,offset, pageSize);
+				return  ResponseEntity.ok().body(messagesWithPagination);
+			}else {
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Ops... Você não faz parte desse time");
+			}
+			
+		}catch(Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao, verifique seus dados");
+		}
+		
+		
+	}
+	
+	@GetMapping("/pagbysquad/{offset}/{pageSize}/{squadid}")
+	private ResponseEntity getListBySquad(
+			@PathVariable int offset, @PathVariable int pageSize, @PathVariable int squadid,
+			@RequestHeader(name = "Authorization") String token) {
+		
+		try {
+			
+			Usuario user =jwt.getUser(token.substring(7));
+			
+			Squad squad = sservice.find(squadid);
+			
+			if(squad.getUsers().contains(user)) {
+				Page<Message> messagesWithPagination = service.listAllWithPaginationBySquad(squadid,offset, pageSize);			
+				return  ResponseEntity.ok().body(messagesWithPagination);
+			}else {
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Ops... Você não faz parte desse squad");
+			}
+			
+		}catch(Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao, verifique seus dados");
+		}
+		
+	}
+	
+	/*
+	@GetMapping("/pagination/{offset}/{pageSize}")
+	private ResponseEntity<Page<Message>> getListTimeWithPagination(@PathVariable int offset, @PathVariable int pageSize) {
+        //Mostra a paginacao com base no master do usuario
+		Page<Message> messagesWithPagination = service.listAllWithPagination(offset, pageSize);
+
         return  ResponseEntity.ok().body(messagesWithPagination);
 	}
-    // @GetMapping("/search")
-    // public Page<Message> search(
-    //         @RequestParam("searchTerm") String searchTerm,
-    //         @RequestParam(
-    //                 value = "page",
-    //                 required = false,
-    //                 defaultValue = "0") int page,
-    //         @RequestParam(
-    //                 value = "size",
-    //                 required = false,
-    //                 defaultValue = "10") int size) {
-    //     return service.search(searchTerm, page, size);
+	
+	@GetMapping("/pagination/{offset}/{pageSize}")
+	private ResponseEntity<Page<Message>> getListSquadWithPagination(@PathVariable int offset, @PathVariable int pageSize) {
+        //Mostra a paginacao com base no master do usuario
+		Page<Message> messagesWithPagination = service.listAllWithPagination(offset, pageSize);
 
-    // }
-
-	// @GetMapping
-    // public Page<Message> getAll() {
-    //     return service.findAll();
-    // }
-
-
-
-
+        return  ResponseEntity.ok().body(messagesWithPagination);
+	}*/
+	
 }

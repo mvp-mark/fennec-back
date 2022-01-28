@@ -36,53 +36,74 @@ public class MessageService {
 		obj = repo.save(obj);
 		}catch (Exception e) {
 			// TODO: handle exception
-			throw new DataIntegrityException("Erro de inserção de Menssagem");
+			throw new DataIntegrityException("Erro de inserção de Menssagem "+e);
 		}
 		return obj;
 	}
 
 	public List<Message> findAll() {
+		
 		return  repo.findAll(Sort.by(Sort.Direction.DESC,"idMensagem"));
-
-	}
-	
-
- public Page<Message> listAllWithPagination(int offset, int pageSize){
- Page<Message> messages = repo.findAll(PageRequest.of(offset, pageSize).withSort(Sort.by(Sort.Direction.DESC,"idMensagem")));
-
-//  repo.findAll(Sort.by(Sort.Direction.DESC,field));
- return messages;
- }
-
-	// public Page<Message> findAll() {
-    //     int page = 0;
-    //     int size = 10;
-    //     PageRequest pageRequest = PageRequest.of(
-    //             page,
-    //             size,
-    //             Sort.Direction.ASC,
-    //             "id_mensagem");
-    //     return new PageImpl<>(
-
-	// 			repo.findAll(), 
-    //             pageRequest, size);
-    // }
-	
-	
-    public Message fromDTO(MessageDTO objDto) throws ParseException {
-		return new Message(
-		objDto.getTexto(), 
-        objDto.getTipo(), 
-        objDto.getStatus(),
-		objDto.getData(),
-		objDto.getHora(),
-		objDto.getUsuarioId()
-        );
-        // objDto.getHora(),
-		// objDto.getData(),
-        // objDto.getUsuarioId()
-
 		
 	}
-	// System.out.print(id);
+
+
+	public Page<Message> listAllWithPagination(int offset, int pageSize){
+	Page<Message> messages = repo.findAll(PageRequest.of(offset, pageSize).withSort(Sort.by(Sort.Direction.DESC,"idMensagem")));
+	
+		return messages;
+	}
+	
+	public Page<Message> listAllWithPaginationByTime(int timeid,int offset, int pageSize){
+		Page<Message> messages = repo.searchByTime(timeid,PageRequest.of(offset, pageSize).withSort(Sort.by(Sort.Order.desc("mn.data"),Sort.Order.desc("mn.hora"))));
+		//Page<Message> messages2 = repo.findAll
+		return messages;
+	}
+	
+	public Page<Message> listAllWithPaginationBySquad(int squadid, int offset, int pageSize){
+		Page<Message> messages = repo.searchBySquad(squadid,PageRequest.of(offset, pageSize).withSort(Sort.by(Sort.Order.desc("mn.data"),Sort.Order.desc("mn.hora"))));
+		//Page<Message> messages2 = repo.findAll
+		return messages;
+	}
+	
+	public Page<Message> listByMasterWithPagination(String master,int offset, int pageSize){
+		//Page<Message> messages = repo.searchByMaster(master,PageRequest.of(offset, pageSize).withSort(Sort.by(Sort.Direction.DESC,"idMensagem")));
+		
+		Page<Message> messages = repo.searchByMaster(master,PageRequest.of(offset, pageSize).withSort(Sort.by(Sort.Order.desc("mn.data"),Sort.Order.desc("mn.hora"))));
+		
+		return messages;
+	}
+	
+	public Page<Message> listByMastertoMasterWithPagination(String master,int offset, int pageSize){
+		//Page<Message> messages = repo.searchByMaster(master,PageRequest.of(offset, pageSize).withSort(Sort.by(Sort.Direction.DESC,"idMensagem")));
+		
+		Page<Message> messages = repo.searchByMastertoMaster(master,PageRequest.of(offset, pageSize).withSort(Sort.by(Sort.Order.desc("mn.data"),Sort.Order.desc("mn.hora"))));
+		
+		return messages;
+	}
+	
+	/*public Message fromDTO(MessageDTO objDto) throws ParseException {
+		return new Message(
+			 objDto.getTexto(), 
+			 objDto.getTipo(), 
+			 objDto.getStatus(),
+			 objDto.getData(),
+			 objDto.getHora(),
+			 objDto.getUsuarioId()
+	   );
+	}*/
+	
+	public Message fromDTO(MessageDTO objDto) throws ParseException {
+		return new Message(
+			objDto.getData(),
+			objDto.getTexto(),
+			objDto.getTipo(),
+			objDto.getTime(),
+			objDto.getSquad(),
+			objDto.getStatus(),
+			objDto.getUsuarioId()
+		);
+	}
 }
+
+

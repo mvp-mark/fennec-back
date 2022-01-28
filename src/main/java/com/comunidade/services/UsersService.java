@@ -43,6 +43,7 @@ public class UsersService {
 			obj = repo.save(obj);
 		}catch (Exception e) {
 			// TODO: handle exception
+			System.out.println(e);
 			throw new DataIntegrityException("Erro de inserção de usuário");
 		}
 		return obj;

@@ -51,7 +51,7 @@ public class TimeResource {
 
 	//Insere um novo time
 	@RequestMapping(method=RequestMethod.POST)
-	public ResponseEntity<Time> insert(@RequestBody @Valid TimeDTO objDto,HttpServletRequest request) {
+	public ResponseEntity insert(@RequestBody @Valid TimeDTO objDto,HttpServletRequest request) {
 		try {
 			String header = request.getHeader("Authorization");
 			String userToken = "";
@@ -79,7 +79,7 @@ public class TimeResource {
 			return ResponseEntity.ok().body(obj);
 
 		}catch(Exception e) { 	
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error Message");
 		}
 	}
 	

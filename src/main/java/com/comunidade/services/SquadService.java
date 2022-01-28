@@ -16,6 +16,7 @@ import com.comunidade.dto.SquadDTO;
 import com.comunidade.dto.TimeDTO;
 import com.comunidade.exceptions.DataIntegrityException;
 import com.comunidade.exceptions.ObjectNotFoundException;
+import com.comunidade.repositories.MessageRepository;
 import com.comunidade.repositories.SquadRepository;
 
 
@@ -24,6 +25,9 @@ public class SquadService {
 
 	@Autowired
 	private SquadRepository repo;
+	
+	@Autowired
+	private MessageRepository mrepo;
 
 	public Squad find(Integer id) {
 		Optional<Squad> obj = repo.findById(id);
@@ -55,10 +59,14 @@ public class SquadService {
 	
 	
 	public void delete(Integer id) {
-		find(id);
+		Squad squad = 	find(id);
 		System.out.println("id "+id);
 		try {
+			System.out.println("linha 65");
+			mrepo.deleteBySquad(squad);
+			System.out.println("linha 67");
 			repo.deleteById(id);
+			System.out.println("linha 69");
 		}
 		catch (DataIntegrityViolationException e) {
 			throw new DataIntegrityException("Não é possível excluir uma categoria que possui produtos");

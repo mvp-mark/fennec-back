@@ -73,6 +73,10 @@ public class Time implements Serializable {
 	@OneToMany(mappedBy = "time", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private Set<Squad> squads = new HashSet<>();
 	
+	@JsonIgnore
+	@OneToMany(mappedBy = "time")
+	private Set<Message> messages = new HashSet<>();
+	
 	@OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "vancacies_id", referencedColumnName = "id")
 	private Vacancies vacancies;
@@ -94,6 +98,16 @@ public class Time implements Serializable {
 		this.status = status;
 		this.users = users;
 		this.vacancies = vacancies;
+	}
+
+	
+	
+	public Set<Message> getMessages() {
+		return messages;
+	}
+
+	public void setMessages(Set<Message> messages) {
+		this.messages = messages;
 	}
 
 	public String getDescription() {

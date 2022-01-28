@@ -92,13 +92,12 @@ public class Usuario implements Serializable {
 	private Nivel nivel;// = new HashSet<>();
 	
 	@JsonIgnore
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = "invites_users", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "invite_id"))
-	Set<Invites> invites;
+	@OneToMany(mappedBy = "userId")
+	private Set<Invites> invites;
 
 	@JsonIgnore
 	@ManyToMany(mappedBy = "users")	
-	Set<Squad> squads = new HashSet<>();;
+	Set<Squad> squads = new HashSet<>();
 	
 	@JsonIgnore
 	@ManyToMany(mappedBy = "users")	

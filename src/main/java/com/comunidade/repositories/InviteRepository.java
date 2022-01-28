@@ -7,22 +7,24 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.comunidade.domain.Invites;
 import com.comunidade.domain.Usuario;
 
-
-
-public interface UserRepository extends JpaRepository<Usuario, Integer> {
+public interface InviteRepository extends JpaRepository<Invites, Integer> {
 	
 //	@Transactional(readOnly=true)
 //	public Page<Usuario> findByPerfisAndCompaniesIn(int perfil, List<Company> companies, Pageable pageable);
 	
-	@Transactional(readOnly=true)
-	public Page<Usuario> findByPerfis(int perfil, Pageable pageable);
+	//@Transactional(readOnly=true)
+	//public Page<Usuario> findByPerfis(int perfil, Pageable pageable);
 	
 	@Transactional(readOnly=true)
-	public Usuario findByEmail(String email);
-
+	public List<Invites> findByReceiverEmail(String receiverEmail);
+	
 	@Transactional(readOnly=true)
-	public Usuario findByTell(String tell);
+	public List<Invites> findByUserId(Usuario userId);
+
+	//@Transactional(readOnly=true)
+	//public Usuario findByTell(String tell);
 
 }

@@ -10,48 +10,45 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import com.comunidade.domain.Client;
-import com.comunidade.domain.Squad;
+import com.comunidade.domain.Invites;
 import com.comunidade.domain.Time;
+import com.comunidade.dto.InvitesDTO;
 import com.comunidade.dto.TimeDTO;
+import com.comunidade.enums.Nivel;
 import com.comunidade.exceptions.DataIntegrityException;
 import com.comunidade.exceptions.ObjectNotFoundException;
-import com.comunidade.repositories.MessageRepository;
-import com.comunidade.repositories.SquadRepository;
+import com.comunidade.repositories.InviteRepository;
 import com.comunidade.repositories.TimeRepository;
 
 @Service
-public class TimeService {
-
-	@Autowired
-	private TimeRepository repo;
+public class InviteService {
 	
 	@Autowired
-	private MessageRepository mrepo;
+	private InviteRepository repo;
 
-	public Time find(Integer id) {
-		Optional<Time> obj = repo.findById(id);
+	public Invites find(Integer id) {
+		Optional<Invites> obj = repo.findById(id);
 		return obj.orElseThrow(() -> new ObjectNotFoundException(
 				"Objeto não encontrado! Id: " + id + ", Tipo: " + Client.class.getName()));
 	}
 	
-	public Time insert(Time obj) {
+	public Invites insert(Invites obj) {
 		obj.setId(null);
 		return repo.save(obj);
 	}
 	
-	public List<Time> saveAll(Time obj) {
+	public List<Invites> saveAll(Invites obj) {
 		obj.setId(null);
 		return repo.saveAll(Arrays.asList(obj));
 	}
 	
-	public List<Time> update(Time obj) {
+	public List<Invites> update(Invites obj) {
 		return repo.saveAll(Arrays.asList(obj));
 	}
 	
 	public void delete(Integer id) {
-		Time time = find(id);
+		find(id);
 		try {
-			mrepo.deleteByTime(time);
 			repo.deleteById(id);
 		}
 		catch (DataIntegrityViolationException e) {
@@ -59,19 +56,19 @@ public class TimeService {
 		}
 	}
 	
-	public Time fromDTO(TimeDTO objDto) {
-		Time time = new Time(objDto.getId(),objDto.getDescription() ,
-				objDto.getName(), objDto.getAverageRating(),
-				objDto.getIsRandom(),objDto.getCreationDate(), 
-				objDto.getLeadId(),
-				objDto.getStatus(), new HashSet<>(objDto.getUsers()),objDto.getVacancies());
+	public Invites fromDTO(InvitesDTO objDto) {
+		Invites invite = new Invites(
+				objDto.getId(),objDto.getUserId(),objDto.getReceiverEmail(),
+				Nivel.toEnum(objDto.getNivel()),objDto.getExpirationDate(),objDto.getAcceptDate(),
+				objDto.getInviteCode(),objDto.getStatus(),objDto.isSeniorAproval(),
+				objDto.isMasterAproval());
 		//time.setDescription(objDto.getDescription());
 		//time.setName(objDto.getName());
-		return time;
+		return invite;
 	}
 	
-	public List<Time> findAll() {
+	public List<Invites> findAll() {
 		return repo.findAll();
 	}
-
+	
 }

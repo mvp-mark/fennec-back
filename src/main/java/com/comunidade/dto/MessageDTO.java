@@ -6,6 +6,8 @@ import java.util.Date;
 
 import javax.validation.constraints.NotBlank;
 
+import com.comunidade.domain.Squad;
+import com.comunidade.domain.Time;
 import com.comunidade.domain.Usuario;
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -31,6 +33,9 @@ public class MessageDTO implements Serializable  {
     private Date data;
     @NotBlank
     private String texto;
+    private Squad squad;
+    private Time time;
+    private Integer meio;
     private String tipo;
     private String status;
     @JsonFilter("UserInfo")
@@ -96,7 +101,31 @@ public class MessageDTO implements Serializable  {
         this.usuarioId = usuarioId;
     }
 
-    public MessageDTO(Integer idMensagem, LocalTime hora, Date data, String texto, String tipo, String status, Usuario usuarioId) {
+    public Squad getSquad() {
+		return squad;
+	}
+
+	public void setSquad(Squad squad) {
+		this.squad = squad;
+	}
+
+	public Time getTime() {
+		return time;
+	}
+
+	public void setTime(Time time) {
+		this.time = time;
+	}
+
+	public Integer getMeio() {
+		return meio;
+	}
+
+	public void setMeio(Integer meio) {
+		this.meio = meio;
+	}
+
+	public MessageDTO(Integer idMensagem, LocalTime hora, Date data, String texto, String tipo, String status, Usuario usuarioId) {
         super();
         this.idMensagem = idMensagem;
         this.hora = hora;
@@ -106,11 +135,21 @@ public class MessageDTO implements Serializable  {
         this.status = status;
         this.usuarioId = usuarioId;
     }
-    
 
-    // public Object setData(java.util.Date cData) {
-    //     return null;
-    // }
+	public MessageDTO(Integer idMensagem, LocalTime hora, Date data, @NotBlank String texto, Squad squad, Time time,
+			Integer meio, String tipo, String status, Usuario usuarioId) {
+		super();
+		this.idMensagem = idMensagem;
+		this.hora = hora;
+		this.data = data;
+		this.texto = texto;
+		this.squad = squad;
+		this.time = time;
+		this.meio = meio;
+		this.tipo = tipo;
+		this.status = status;
+		this.usuarioId = usuarioId;
+	}
 
-
+	
 }

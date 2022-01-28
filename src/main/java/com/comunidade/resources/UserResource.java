@@ -44,7 +44,6 @@ public class UserResource {
 	
 	@RequestMapping(value="/findByPerfil/{id}/{page}", method=RequestMethod.GET)
 	public ResponseEntity<UserPagination> findByPerfil(@PathVariable Integer id,@PathVariable Integer page) {
-			
 		Pageable paging = PageRequest.of(page, 10);		
 		UserPagination obj = service.findByPerfil(id,paging);          
 		
@@ -68,7 +67,8 @@ public class UserResource {
 	public ResponseEntity<Usuario> insert(@RequestBody @Valid UsuarioDTO objDto) {
 		Usuario obj = service.fromDTO(objDto);
 		
-		obj.setNivel(Nivel.toEnum(3));
+		obj.setNivel(Nivel.toEnum(2));
+		obj.setHierarquia("2/");
 		
 		obj = service.insert(obj);
 		return ResponseEntity.ok().body(obj);

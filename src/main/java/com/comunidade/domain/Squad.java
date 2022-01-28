@@ -17,6 +17,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 import com.comunidade.enums.Status;
@@ -68,6 +69,8 @@ public class Squad implements Serializable{
 	@JsonIgnoreProperties(value = {"isRandom",
 		    "averageRating",
 		    "isRandom",
+		    "creationDate",
+		    "status",
 		    "vacancies",})
 	@ManyToOne
 	@JoinColumn(name = "time_id", nullable = false)
@@ -76,6 +79,10 @@ public class Squad implements Serializable{
 	@OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "vancacies_id", referencedColumnName = "id")
 	private Vacancies vacancies;
+	
+	@JsonIgnore
+	@OneToMany(mappedBy = "squad")
+	private Set<Message> messages = new HashSet<>();
 	
 	public Squad() {
 		
@@ -97,6 +104,16 @@ public class Squad implements Serializable{
 		this.vacancies = vacancies;
 	}
 	
+	
+	
+	public Set<Message> getMessages() {
+		return messages;
+	}
+
+	public void setMessages(Set<Message> messages) {
+		this.messages = messages;
+	}
+
 	public String getDescription() {
 		return description;
 	}
