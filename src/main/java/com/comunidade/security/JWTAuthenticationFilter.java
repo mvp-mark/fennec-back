@@ -17,6 +17,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.comunidade.domain.Usuario;
 import com.comunidade.dto.CredenciaisDTO;
@@ -61,7 +63,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             throw new RuntimeException(e);
         }
     }
-
+    
     @Override
     protected void successfulAuthentication(HttpServletRequest req,
             HttpServletResponse res,
@@ -69,6 +71,12 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             Authentication auth) throws IOException, ServletException {
 
         String username = ((UserSS) auth.getPrincipal()).getUsername();
+        
+        String addr = req.getRemoteAddr();
+        
+        System.out.println(addr);
+        
+        //Aqui deve ser salvo o ip do usuario no banco;
         
         
         

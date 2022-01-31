@@ -16,7 +16,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
@@ -28,7 +27,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-public class Squad implements Serializable{
+public class Time implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -37,8 +36,10 @@ public class Squad implements Serializable{
 	private String name;
 	private String description;
 	private float averageRating;
+	
 	@JsonIgnore
 	private Boolean isRandom;
+	
 	private Date creationDate;
 	
 	@JsonIgnoreProperties(value = {"rg",
@@ -63,33 +64,29 @@ public class Squad implements Serializable{
 	@Getter
 	@Setter
 	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-	@JoinTable(name = "user_squads", joinColumns = @JoinColumn(name = "squad_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
+	@JoinTable(name = "user_times", joinColumns = @JoinColumn(name = "time_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
 	Set<Usuario> users = new HashSet<>();
 	
-	@JsonIgnoreProperties(value = {"isRandom",
-		    "averageRating",
-		    "isRandom",
-		    "creationDate",
-		    "status",
-		    "vacancies",})
-	@ManyToOne
-	@JoinColumn(name = "time_id", nullable = false)
-	Time time;
+	@JsonIgnore
+	@Getter
+	@Setter
+	@OneToMany(mappedBy = "time", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	private Set<Squad> squads = new HashSet<>();
+	
+	@JsonIgnore
+	@OneToMany(mappedBy = "time")
+	private Set<Message> messages = new HashSet<>();
 	
 	@OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "vancacies_id", referencedColumnName = "id")
 	private Vacancies vacancies;
 	
-	@JsonIgnore
-	@OneToMany(mappedBy = "squad")
-	private Set<Message> messages = new HashSet<>();
-	
-	public Squad() {
+	public Time() {
 		
 	}
-	
-	public Squad(Integer id, String name, String description, float averageRating, Boolean isRandom, Date creationDate,
-			Usuario leadId, Status status, Set<Usuario> users, Time time, Vacancies vacancies) {
+
+	public Time(Integer id, String name, String description, float averageRating, Boolean isRandom, Date creationDate,
+			Usuario leadId, Status status, Set<Usuario> users, Vacancies vacancies) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -100,10 +97,9 @@ public class Squad implements Serializable{
 		this.leadId = leadId;
 		this.status = status;
 		this.users = users;
-		this.time = time;
 		this.vacancies = vacancies;
 	}
-	
+
 	
 	
 	public Set<Message> getMessages() {
@@ -133,7 +129,7 @@ public class Squad implements Serializable{
 	public Vacancies getVacancies() {
 		return vacancies;
 	}
-	
+
 	public void setVacancies(Vacancies vacancies) {
 		this.vacancies = vacancies;
 	}
@@ -180,16 +176,17 @@ public class Squad implements Serializable{
 		return id;
 	}
 
+
 	public void setId(Integer id) {
 		this.id = id;
 	}
 
-	public Time getTime() {
-		return time;
+	public Set<Squad> getSquads() {
+		return squads;
 	}
 
-	public void setTime(Time time) {
-		this.time = time;
+	public void setSquads(Set<Squad> squads) {
+		this.squads = squads;
 	}
-	
+		
 }

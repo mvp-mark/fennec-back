@@ -11,6 +11,7 @@ import java.util.Set;
 
 import javax.persistence.*;
 
+import com.comunidade.enums.Meio;
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -23,8 +24,7 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 @Entity
 @Table(name = "Mensagens")
 public class Message implements Serializable {
-
-    
+	
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idMensagem")
@@ -44,10 +44,31 @@ public class Message implements Serializable {
     @Column(name = "tipo")
     private String tipo;
     
+    @Column(name = "meio")
+    private Meio meio;
+    
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "time_id", referencedColumnName = "id")
+    @JsonIgnoreProperties(value = {
+    		"averageRating",
+    	    "creationDate",
+    	    "leadId",
+    	    "vacancies",
+    	    "status",})
+    private com.comunidade.domain.Time time;
+    
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "squad_id", referencedColumnName = "id")
+    @JsonIgnoreProperties(value = {
+    		"averageRating",
+    	    "creationDate",
+    	    "leadId",
+    	    "vacancies",
+    	    "status",})
+    private Squad squad;
+    
     @Column(name = "status")
     private String status;
-    
-
     
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "usuario_id", referencedColumnName = "id")
@@ -67,14 +88,14 @@ public class Message implements Serializable {
     "squads",})
     private Usuario usuarioId;
     
-    
     public Message(){}
     
     public Message(String string, String string2, String string3, Object object){
 
     }
     public Message(String texto, String tipo, String status, Date data, LocalTime hora, Usuario usuarioId) throws ParseException{
-        Date date =  new Date();
+        
+    	Date date =  new Date();
         String str = new SimpleDateFormat("yyyy-MM-dd").format(date);
         String str2 = new SimpleDateFormat("HH:mm").format(date);
         java.sql.Time sqlTime = new Time(new Date().getTime());
@@ -87,6 +108,7 @@ public class Message implements Serializable {
         Date c = sdf.parse(str);	
         LocalTime h = LocalTime.parse(timeString);
         System.out.println("HORA: "+ h);
+        
         this.texto=texto;
         this.tipo = tipo;
         this.status = status;
@@ -95,20 +117,72 @@ public class Message implements Serializable {
         this.usuarioId = usuarioId;
     }
 
-    // public Message(Object object, String texto, Time hora, Date data, String tipo, String status,
-    //         Usuario usuarioId) {
+    
 
-    // }
+    public Message(Date data, String texto, String tipo, com.comunidade.domain.Time time,
+			Squad squad, String status, Usuario usuarioId) throws ParseException{
+		super();
+		
+		Date date =  new Date();
+        String str = new SimpleDateFormat("yyyy-MM-dd").format(date);
+        String str2 = new SimpleDateFormat("HH:mm").format(date);
+        java.sql.Time sqlTime = new Time(new Date().getTime());
 
-    public Integer getIdMensagem() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss[.nnnnnnn]");
+        LocalTime now = LocalTime.now();
+        String timeString = now.format(formatter);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");      
+        Date c = sdf.parse(str);	
+        LocalTime h = LocalTime.parse(timeString);
+        System.out.println("HORA: "+ h);
+        
+		this.hora = h;
+		this.data = c;
+		this.texto = texto;
+		this.tipo = tipo;
+		this.meio = meio;
+		this.time = time;
+		this.squad = squad;
+		this.status = status;
+		this.usuarioId = usuarioId;
+	}
+
+	public Integer getIdMensagem() {
         return this.idMensagem;
     }
-
+    
     public void setIdMensagem(Integer idMensagem) {
         this.idMensagem = idMensagem;
     }
+    @Enumerated(EnumType.ORDINAL)
+    public Meio getMeio() {
+		return meio;
+	}
 
-    public LocalTime getHora() {
+	public void setMeio(Meio meio) {
+		this.meio = meio;
+	}
+
+	
+
+	public com.comunidade.domain.Time getTime() {
+		return time;
+	}
+
+	public void setTime(com.comunidade.domain.Time time) {
+		this.time = time;
+	}
+
+	public Squad getSquad() {
+		return squad;
+	}
+
+	public void setSquad(Squad squad) {
+		this.squad = squad;
+	}
+
+	public LocalTime getHora() {
         return this.hora;
     }
 
@@ -156,11 +230,7 @@ public class Message implements Serializable {
         this.usuarioId = usuarioId;
     }
 
-
-
-
     // @OneToMany(targetEntity = Usuario.class, cascade = CascadeType.ALL)
     // @JoinColumn(name="idUsuario", referencedColumnName = "idMensagem")
     // private String idCanal;
-
 }

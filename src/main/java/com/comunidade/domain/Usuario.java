@@ -1,15 +1,20 @@
 package com.comunidade.domain;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -17,11 +22,18 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
+import com.comunidade.enums.Nivel;
 import com.comunidade.enums.Perfil;
 import com.comunidade.enums.Status;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import org.hibernate.validator.constraints.br.CPF;
 
@@ -37,13 +49,15 @@ public class Usuario implements Serializable {
 
 	@Column(unique=true)
 	private String rg;
-
+	
 	private Date birthDay;
+	
 	@Column(unique=true)
 	private String tell;
 	
 	@CPF
 	@Column(unique=true)
+	@JsonIgnore
 	private String cpf;
 
 	@Column(unique = true)
@@ -51,23 +65,64 @@ public class Usuario implements Serializable {
 
 	@JsonIgnore
 	private String password;
-
+	
+	@JsonIgnore
 	private Boolean validated;
-
+	
+	@JsonIgnore
 	private Boolean isLead;
-
+	
+	private String hierarquia;
+	
 	private float averageRating;
-
+	
+	@JsonIgnore
 	private Integer statusUser;
-
+	
 	private String urlLatter;
-
+	
 	private String urlLinkedin;
+	
+	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(name = "PERFIS")
+	private Set<Integer> perfis = new HashSet<>();
+	
+	//*@ElementCollection(fetch = FetchType.EAGER)
+	//*@CollectionTable(name = "NIVEL")
+	private Nivel nivel;// = new HashSet<>();
+	
+	@JsonIgnore
+	@OneToMany(mappedBy = "userId")
+	private Set<Invites> invites;
 
 	@JsonIgnore
+	@ManyToMany(mappedBy = "users")	
+	Set<Squad> squads = new HashSet<>();
+	
+	@JsonIgnore
+	@ManyToMany(mappedBy = "users")	
+	Set<Time> times = new HashSet<>();
+	
+	@JsonIgnore
 	@OneToMany(mappedBy = "usuarioId")
-
 	private Set<Message> messages = new HashSet<>();
+	
+	@Enumerated(EnumType.ORDINAL)
+	public Nivel getNivel() {
+		return nivel;
+	}
+
+	public void setNivel(Nivel nivel) {
+		this.nivel = nivel;
+	}
+
+	public String getHierarquia() {
+		return hierarquia;
+	}
+
+	public void setHierarquia(String hierarquia) {
+		this.hierarquia = hierarquia;
+	}
 
 	public Boolean isValidated() {
 		return this.validated;
@@ -104,19 +159,15 @@ public class Usuario implements Serializable {
 	public void setSquads(Set<Squad> squads) {
 		this.squads = squads;
 	}
+	
+	public Set<Time> getTimes() {
+		return times;
+	}
 
-	@ElementCollection(fetch = FetchType.EAGER)
-	@CollectionTable(name = "PERFIS")
-	private Set<Integer> perfis = new HashSet<>();
-
-	@ManyToMany
-	@JoinTable(name = "invites_users", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "invite_id"))
-	Set<Invites> invites;
-
-	@ManyToMany
-	@JoinTable(name = "squad_users", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "squad_id"))
-	Set<Squad> squads;
-
+	public void setTimes(Set<Time> times) {
+		this.times = times;
+	}
+	
 	public Usuario() {
 	}
 
@@ -143,6 +194,16 @@ public class Usuario implements Serializable {
 		this.averageRating = averageRating;
 		addPerfil(Perfil.toEnum(perfil));
 	}
+	
+	/*
+	public Set<Integer> getNivel() {
+		return nivel;
+	}
+
+	public void setNivel(Set<Integer> nivel) {
+		this.nivel = nivel;
+	}
+	*/
 
 	public Integer getId() {
 		return id;
@@ -183,6 +244,10 @@ public class Usuario implements Serializable {
 	public void addPerfil(Perfil perfil) {
 		perfis.add(perfil.getCod());
 	}
+	/*
+	public void addNivel(Nivel nivel) {
+		perfis.add(nivel.getCod());
+	}*/
 
 	public Boolean getValidated() {
 		return validated;
