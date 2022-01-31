@@ -82,6 +82,14 @@ public class MessageService {
 		return messages;
 	}
 	
+	public Page<Message> listGeral(int offset, int pageSize){
+		//Page<Message> messages = repo.searchByMaster(master,PageRequest.of(offset, pageSize).withSort(Sort.by(Sort.Direction.DESC,"idMensagem")));
+		
+		Page<Message> messages = repo.searchGeral(PageRequest.of(offset, pageSize).withSort(Sort.by(Sort.Order.desc("data"),Sort.Order.desc("hora"))));
+		
+		return messages;
+	}
+	
 	/*public Message fromDTO(MessageDTO objDto) throws ParseException {
 		return new Message(
 			 objDto.getTexto(), 

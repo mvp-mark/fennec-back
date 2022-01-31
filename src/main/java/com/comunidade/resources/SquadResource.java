@@ -55,7 +55,7 @@ public class SquadResource {
 
 	//Insere um novo squad
 	@RequestMapping(method=RequestMethod.POST)
-	public ResponseEntity<Squad> insert(@RequestBody @Valid SquadDTO objDto,HttpServletRequest request) {
+	public ResponseEntity insert(@RequestBody @Valid SquadDTO objDto,HttpServletRequest request) {
 		try {
 			String header = request.getHeader("Authorization");
 			String userToken = "";
@@ -91,11 +91,11 @@ public class SquadResource {
 				return ResponseEntity.ok().body(obj);
 				
 			}else{
-				return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Ops... Você não é dono desse squad");
 			}
 		}catch(Exception e) {
 			System.out.println("exception e"+e);
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao.");
 		}
 	}
 	
@@ -103,7 +103,7 @@ public class SquadResource {
 	
 	//Visualiza squads por usuario
 	@RequestMapping(value="/lista", method=RequestMethod.GET)
-	public ResponseEntity<List<Time>> findByUser(HttpServletRequest request) {
+	public ResponseEntity findByUser(HttpServletRequest request) {
 		//Encontra usuario por token
 		try {
 			String header = request.getHeader("Authorization");
@@ -121,13 +121,14 @@ public class SquadResource {
 			
 			return ResponseEntity.ok().body(lista);
 		}catch(Exception e) {
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+			System.out.println("e "+e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao.");
 		}
 	}
 	
 	//Mostra a Squad
 	@RequestMapping(value="/mostrar", method=RequestMethod.POST)
-	public ResponseEntity<Squad> findById(@RequestBody @Valid SquadDTO objDto, HttpServletRequest request){
+	public ResponseEntity findById(@RequestBody @Valid SquadDTO objDto, HttpServletRequest request){
 		//Encontra usuario por token
 		try {
 			/*String header = request.getHeader("Authorization");
@@ -145,13 +146,14 @@ public class SquadResource {
 			
 			return ResponseEntity.ok().body(squad);
 		}catch(Exception e) {
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+			System.out.println("e "+e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao.");
 		}
 	}
 	
 	//Altera configuracoes do squad
 	@RequestMapping(value="/update", method=RequestMethod.POST)
-	public ResponseEntity<Squad> updateSquad(@RequestBody @Valid SquadDTO objDto, HttpServletRequest request) {
+	public ResponseEntity updateSquad(@RequestBody @Valid SquadDTO objDto, HttpServletRequest request) {
 		//Altera as configuracoes do time;
 		try {
 			String header = request.getHeader("Authorization");
@@ -177,18 +179,18 @@ public class SquadResource {
 				return ResponseEntity.ok().body(squads);
 			}
 			else {
-				return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Ops... Você não é dono desse squad");
 			}
 			
 		}catch(Exception e) {
 			System.out.println("e "+e);
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao.");
 		}
 	}
 	
 	//Adiciona usuarios ao squad
 	@RequestMapping(value="/addusuario", method=RequestMethod.POST)
-	public ResponseEntity<Set<Usuario>> addusuario(@RequestBody @Valid SquadDTO squadDto, HttpServletRequest request) {
+	public ResponseEntity addusuario(@RequestBody @Valid SquadDTO squadDto, HttpServletRequest request) {
 		//Encontra usuario atraves do token;
 		try {
 			String header = request.getHeader("Authorization");
@@ -213,17 +215,19 @@ public class SquadResource {
 				List<Squad> squads= service.update(squad);
 				return ResponseEntity.ok().body(squads.get(0).getUsers());
 			}else {
-				return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+				
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Ops... Você não é dono desse squad");
 			}
 		
 		}catch(Exception e) {
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+			System.out.println("e "+e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao.");
 		}
 	}
 	
 	//Mostra Lista de usuarios do squad
 	@RequestMapping(value="/listausuarios", method=RequestMethod.POST)
-	public ResponseEntity<List<Usuario>> usuariostime(@RequestBody @Valid SquadDTO squadDto,HttpServletRequest request) {
+	public ResponseEntity usuariostime(@RequestBody @Valid SquadDTO squadDto,HttpServletRequest request) {
 		//Encontra usuario por token
 		try {
 			Squad squad = service.find(squadDto.getId());
@@ -233,7 +237,8 @@ public class SquadResource {
 			//Time tobj = service.findBy
 			return ResponseEntity.ok().body(lista);
 		}catch(Exception e) {
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+			System.out.println("e "+e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao.");
 		}
 		
 		
@@ -241,7 +246,7 @@ public class SquadResource {
 		
 	//Remove usuarios do squad
 	@RequestMapping(value="/removeusuario", method=RequestMethod.POST)
-	public ResponseEntity<Set<Usuario>> removeUsuario(@RequestBody @Valid SquadDTO squadDto, HttpServletRequest request) {
+	public ResponseEntity removeUsuario(@RequestBody @Valid SquadDTO squadDto, HttpServletRequest request) {
 		//Recupera dados do usuario que fez a requisicao
 		try {
 			String header = request.getHeader("Authorization");
@@ -268,7 +273,7 @@ public class SquadResource {
 					if(!squadDto.getUsers().get(i).getId().equals(squad.getLeadId().getId())) {					
 						usuarios.add(uservice.find(squadDto.getUsers().get(i).getId()));
 					}else {
-						return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+						return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao.");
 					}
 				}
 				
@@ -278,11 +283,12 @@ public class SquadResource {
 				List<Squad> squads = service.update(squad);
 				return ResponseEntity.ok().body(squads.get(0).getUsers());
 			}else {
-				return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Ops... Você não é dono desse squad");
 				//Usuario nao autorizado
 			}
 		}catch(Exception e) {
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+			System.out.println("e "+e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao.");
 		}
 		//Usuario obj = service.findByEmail(email);
 	}
@@ -291,7 +297,7 @@ public class SquadResource {
 	
 	//deleta squad
 	@RequestMapping(value="/deletasquad", method=RequestMethod.POST)
-	public ResponseEntity<Usuario> deletatime(@RequestBody @Valid SquadDTO squadDto, HttpServletRequest request) {
+	public ResponseEntity deletatime(@RequestBody @Valid SquadDTO squadDto, HttpServletRequest request) {
 		//Recupera dados do usuario que fez a requisicao
 		try {
 			String header = request.getHeader("Authorization");
@@ -313,11 +319,11 @@ public class SquadResource {
 				
 				return new ResponseEntity<>(null,HttpStatus.OK);
 			}else {
-				return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Ops... Você não é dono desse squad");
 			}
 		}catch(Exception e) {
 			System.out.println("e "+e);
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao.");
 		}
 	}
 	

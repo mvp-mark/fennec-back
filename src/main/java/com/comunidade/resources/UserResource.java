@@ -7,6 +7,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,7 +36,7 @@ public class UserResource {
 	private BCryptPasswordEncoder pe;
 	
 	@RequestMapping(value="/{id}", method=RequestMethod.GET)
-	public ResponseEntity<Usuario> find(@PathVariable Integer id) {
+	public ResponseEntity find(@PathVariable Integer id) {
 		Usuario obj = null;
 		
 		obj = service.find(id);	
@@ -64,14 +65,19 @@ public class UserResource {
 	}
 	
 	@RequestMapping(method=RequestMethod.POST)
-	public ResponseEntity<Usuario> insert(@RequestBody @Valid UsuarioDTO objDto) {
-		Usuario obj = service.fromDTO(objDto);
-		
-		obj.setNivel(Nivel.toEnum(2));
-		obj.setHierarquia("2/");
-		
-		obj = service.insert(obj);
-		return ResponseEntity.ok().body(obj);
+	public ResponseEntity insert(@RequestBody @Valid UsuarioDTO objDto) {
+		try {
+			Usuario obj = service.fromDTO(objDto);
+			
+			obj.setNivel(Nivel.toEnum(2));
+			obj.setHierarquia("2/");
+			
+			obj = service.insert(obj);
+			return ResponseEntity.ok().body(obj);
+		}catch(Exception e) {
+			System.out.println("exception e"+e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao.");
+		}
 	}
 	
 	@RequestMapping(value="/{id}", method=RequestMethod.PUT)

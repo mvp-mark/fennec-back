@@ -78,14 +78,15 @@ public class TimeResource {
 			
 			return ResponseEntity.ok().body(obj);
 
-		}catch(Exception e) { 	
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error Message");
+		}catch(Exception e) {
+			System.out.println("exception e"+e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao.");
 		}
 	}
 	
 	//Visualiza times por usuario
 	@RequestMapping(value="/lista", method=RequestMethod.GET)
-	public ResponseEntity<List<Time>> findByUser(HttpServletRequest request) {
+	public ResponseEntity findByUser(HttpServletRequest request) {
 		//Encontra usuario por token
 		try {
 			String header = request.getHeader("Authorization");
@@ -103,13 +104,14 @@ public class TimeResource {
 			
 			return ResponseEntity.ok().body(lista);
 		}catch(Exception e) {
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+			System.out.println("exception e"+e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao.");
 		}
 	}
 	
 	//Mostra o time
 	@RequestMapping(value="/mostrar", method=RequestMethod.POST)
-	public ResponseEntity<Time> findById(@RequestBody @Valid TimeDTO objDto, HttpServletRequest request) {
+	public ResponseEntity findById(@RequestBody @Valid TimeDTO objDto, HttpServletRequest request) {
 		//Encontra usuario por token
 		try {
 			/*String header = request.getHeader("Authorization");
@@ -127,13 +129,14 @@ public class TimeResource {
 			
 			return ResponseEntity.ok().body(time);
 		}catch(Exception e) {
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+			System.out.println("exception e"+e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao.");
 		}
 	}
 	
 	//Altera configuracoes do time
 	@RequestMapping(value="/update", method=RequestMethod.POST)
-	public ResponseEntity<List<Time>> updateTime(@RequestBody @Valid TimeDTO objDto, HttpServletRequest request) {
+	public ResponseEntity updateTime(@RequestBody @Valid TimeDTO objDto, HttpServletRequest request) {
 		//Altera as configuracoes do time;
 		try {
 			String header = request.getHeader("Authorization");
@@ -156,17 +159,17 @@ public class TimeResource {
 				return ResponseEntity.ok().body(times);
 			}
 			else {
-				return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Ops... Você não é o dono desse time");
 			}
 		}catch(Exception e) {
-			System.out.println("e "+e);
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+			System.out.println("exception e"+e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao.");
 		}
 	}
 	
 	//Adiciona usuarios ao time
 	@RequestMapping(value="/addusuario", method=RequestMethod.POST)
-	public ResponseEntity<Set<Usuario>> addusuario(@RequestBody @Valid TimeDTO timeDto, HttpServletRequest request) {
+	public ResponseEntity addusuario(@RequestBody @Valid TimeDTO timeDto, HttpServletRequest request) {
 		//Encontra usuario atraves do token;
 		try {
 			String header = request.getHeader("Authorization");
@@ -191,17 +194,18 @@ public class TimeResource {
 				List<Time> times = service.update(time);
 				return ResponseEntity.ok().body(times.get(0).getUsers());
 			}else {
-				return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Ops... Você não é o dono desse time");
 			}
 		
 		}catch(Exception e) {
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+			System.out.println("exception e"+e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao.");
 		}
 }
 	
 	//Mostra Lista de usuarios do time
 	@RequestMapping(value="/listausuarios", method=RequestMethod.POST)
-	public ResponseEntity<List<Usuario>> usuariostime(@RequestBody @Valid TimeDTO timeDto,HttpServletRequest request) {
+	public ResponseEntity usuariostime(@RequestBody @Valid TimeDTO timeDto,HttpServletRequest request) {
 		//Encontra usuario por token
 		try {
 			Time time = service.find(timeDto.getId());
@@ -211,14 +215,15 @@ public class TimeResource {
 			//Time tobj = service.findBy
 			return ResponseEntity.ok().body(lista);
 		}catch(Exception e) {
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+			System.out.println("exception e"+e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao.");
 		}
 		
 	}
 	
 	//Mostra Lista de squads do time
 	@RequestMapping(value="/listasquads", method=RequestMethod.POST)
-	public ResponseEntity<List<Squad>> squadstime(@RequestBody @Valid TimeDTO timeDto,HttpServletRequest request) {
+	public ResponseEntity squadstime(@RequestBody @Valid TimeDTO timeDto,HttpServletRequest request) {
 		//Encontra usuario por token
 		try {
 			Time time = service.find(timeDto.getId());
@@ -226,13 +231,14 @@ public class TimeResource {
 			//Time tobj = service.findBy
 			return ResponseEntity.ok().body(lista);
 		}catch(Exception e) {
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+			System.out.println("exception e"+e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao.");
 		}
 	}
 		
 	//Remove usuarios do time
 	@RequestMapping(value="/removeusuario", method=RequestMethod.POST)
-	public ResponseEntity<Set<Usuario>> find(@RequestBody @Valid TimeDTO timeDto, HttpServletRequest request) {
+	public ResponseEntity find(@RequestBody @Valid TimeDTO timeDto, HttpServletRequest request) {
 		//Recupera dados do usuario que fez a requisicao
 		try {
 			String header = request.getHeader("Authorization");
@@ -259,7 +265,7 @@ public class TimeResource {
 					if(!timeDto.getId().equals(obj.getId())) {					
 						usuarios.add(uservice.find(timeDto.getId()));
 					}else {
-						return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+						return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao.");
 					}
 				}
 				
@@ -267,18 +273,19 @@ public class TimeResource {
 				List<Time> times = service.update(time);
 				return ResponseEntity.ok().body(times.get(0).getUsers());
 			}else {
-				return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Ops... Você não é o dono desse time");
 				//Usuario nao autorizado
 			}
 		}catch(Exception e) {
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+			System.out.println("exception e"+e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao.");
 		}
 		//Usuario obj = service.findByEmail(email);
 	}
 	
 	//deleta time
 	@RequestMapping(value="/deletatime", method=RequestMethod.POST)
-	public ResponseEntity<Usuario> deletatime(@RequestBody @Valid TimeDTO timeDto, HttpServletRequest request) {
+	public ResponseEntity deletatime(@RequestBody @Valid TimeDTO timeDto, HttpServletRequest request) {
 		//Recupera dados do usuario que fez a requisicao
 		try {
 			String header = request.getHeader("Authorization");
@@ -295,10 +302,11 @@ public class TimeResource {
 				service.delete(timeDto.getId());
 				return new ResponseEntity<>(null,HttpStatus.OK);
 			}else {
-				return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Ops... Você não é o dono desse time");
 			}
 		}catch(Exception e) {
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+			System.out.println("exception e"+e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao.");
 		}
 	}
 	

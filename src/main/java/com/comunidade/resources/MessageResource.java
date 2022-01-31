@@ -65,7 +65,8 @@ public class MessageResource {
 			obj = service.insert(obj);
 			return ResponseEntity.ok().body(obj);
 		}catch(Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao, verifique seus dados");
+			System.out.println("exception e"+e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao.");
 		}
 		
 		
@@ -103,7 +104,7 @@ public class MessageResource {
 					System.out.println("user ok");
 					obj = service.insert(obj);
 				}else {
-					//not ok ;-;
+					return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Ops... Você não faz parte desse time");
 				}
 				break;
 			
@@ -116,10 +117,9 @@ public class MessageResource {
 					System.out.println("user ok");
 					obj = service.insert(obj);
 				}else {
-					//not ok ;-;
+					return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Ops... Você não faz parte desse squad");
 				}
 				break;
-				
 			default:
 				//
 				break;
@@ -128,7 +128,8 @@ public class MessageResource {
 			return ResponseEntity.ok().body(obj);
 			
 		}catch(Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao, verifique seus dados");
+			System.out.println("exception e"+e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao.");
 		}
 		
 	}
@@ -142,7 +143,8 @@ public class MessageResource {
 			return ResponseEntity.ok().body(list);
 			
 		}catch(Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao, verifique seus dados");
+			System.out.println("exception e"+e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao.");
 		}
 		
 	}
@@ -151,12 +153,16 @@ public class MessageResource {
 	private ResponseEntity getListAllWithPagination(
 			@PathVariable int offset, @PathVariable int pageSize) {		
 		try {
-			Page<Message> messagesWithPagination = service.listAllWithPagination(offset, pageSize);
+			//Page<Message> messagesWithPagination = service.listAllWithPagination(offset, pageSize);
+			
+			Page<Message> messagesWithPagination = service.listGeral(offset, pageSize);
+			
 			
 			return  ResponseEntity.ok().body(messagesWithPagination);
 			
 		}catch(Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao, verifique seus dados");
+			System.out.println("exception e"+e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao.");
 		}
 		
 	}
@@ -174,7 +180,8 @@ public class MessageResource {
 			return  ResponseEntity.ok().body(messagesWithPagination);
 			
 		}catch(Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao, verifique seus dados");
+			System.out.println("exception e"+e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao.");
 		}
 		
 	}
@@ -189,11 +196,11 @@ public class MessageResource {
 			String master = user.getId().toString();
 			Page<Message> messagesWithPagination = service.listByMastertoMasterWithPagination(master,offset, pageSize);
 			
-			
 			return  ResponseEntity.ok().body(messagesWithPagination);
 			
 		}catch(Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao, verifique seus dados");
+			System.out.println("exception e"+e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao.");
 		}
 		
 	}
@@ -215,7 +222,8 @@ public class MessageResource {
 			}
 			
 		}catch(Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao, verifique seus dados");
+			System.out.println("exception e"+e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao.");
 		}
 		
 		
@@ -240,7 +248,8 @@ public class MessageResource {
 			}
 			
 		}catch(Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao, verifique seus dados");
+			System.out.println("exception e"+e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao.");
 		}
 		
 	}

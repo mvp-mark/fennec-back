@@ -58,6 +58,12 @@ public interface MessageRepository extends JpaRepository<Message, Integer> {
 			+ " AND mn.meio = 2")
 	Page<Message> searchBySquad(@Param("squadid") int squadid, Pageable pageable);
 	
+	@Query(""
+			+ " FROM Message mn"
+			+ " WHERE\r\n"
+			+ " mn.meio = 0")
+	Page<Message> searchGeral(Pageable pageable);
+	
 	@Transactional
 	@Modifying
 	@Query("DELETE FROM Message m WHERE m.time = :timeid")
