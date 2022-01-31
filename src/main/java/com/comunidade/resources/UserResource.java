@@ -70,7 +70,7 @@ public class UserResource {
 			Usuario obj = service.fromDTO(objDto);
 			
 			obj.setNivel(Nivel.toEnum(2));
-			obj.setHierarquia("2/");
+			obj.setHierarquia("134/");
 			
 			obj = service.insert(obj);
 			return ResponseEntity.ok().body(obj);
