@@ -41,6 +41,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
 
 	private static final String[] PUBLIC_MATCHERS_GET = {
+		"/wss/**"
 		
 			
 			
@@ -48,6 +49,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	private static final String[] PUBLIC_MATCHERS_POST = {
 			"/users/**",
+			"/wss/**"
 			
 			
 	};
@@ -56,12 +58,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			"/actuator/health",
 			"/login",
 			"/company",
+			"/wss/**"
 			
 	};
 
 	@Override
 	public void configure(WebSecurity web) throws Exception {
-			 web.ignoring().antMatchers("/v2/api-docs", "/configuration/ui", "/swagger-resources/**", "/configuration/**",
+			 web.ignoring().antMatchers("/v2/api-docs","/wss/**", "/configuration/ui", "/swagger-resources/**", "/configuration/**",
 			"/swagger-ui.html", "/webjars/**");
 	}
 	
