@@ -1,4 +1,4 @@
-package com.comunidade.services;
+package com.comunidade.config;
 
 
 import org.springframework.context.annotation.Configuration;
@@ -19,7 +19,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
   @Override
   public void registerStompEndpoints(final StompEndpointRegistry registry) {
-    registry.addEndpoint("/wss").setAllowedOrigins("http://localhost:3001/").setAllowedOriginPatterns("http://localhost:3001/").withSockJS();
+    registry.addEndpoint("/wss").setAllowedOriginPatterns("*").withSockJS();
   }
 
 

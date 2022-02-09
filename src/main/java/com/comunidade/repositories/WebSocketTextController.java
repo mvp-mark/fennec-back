@@ -31,8 +31,8 @@ public class WebSocketTextController {
 	}
 	
 	
-	@SendTo("/topic/message")
-	public TextMessageDTO broadcastMessage(@Payload TextMessageDTO textMessageDTO) {
-		return textMessageDTO;
-	}
+	// @SendTo("/topic/message")
+	// public TextMessageDTO broadcastMessage(@Payload TextMessageDTO textMessageDTO) {
+	// 	return textMessageDTO;
+	// }
 }

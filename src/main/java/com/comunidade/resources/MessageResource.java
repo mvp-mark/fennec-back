@@ -24,6 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -50,8 +52,12 @@ public class MessageResource {
 	@Autowired
 	private JWTUtil jwt;
 
+		@Autowired
+    	SimpMessagingTemplate template;
+		
 	// @RequestMapping(value="/send",method=RequestMethod.POST)
 	@PostMapping("/send")
+	@SendTo("/topic/message")
 	public ResponseEntity insert(@RequestBody @Valid MessageDTO objDto,
 			@RequestHeader(name = "Authorization") String token) throws ParseException {
 		try {
@@ -59,6 +65,8 @@ public class MessageResource {
 			Usuario user =jwt.getUser(token.substring(7));
 			objDto.setUsuarioId(user);
 			Message obj = service.fromDTO(objDto);
+					template.convertAndSend("/topic/message", obj);
+					
 			obj.setMeio(Meio.FEEDGERAL);
 			//Atribuir a mensagem sempre para o time geral
 			
