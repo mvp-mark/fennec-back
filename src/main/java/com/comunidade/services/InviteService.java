@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.comunidade.domain.Client;
 import com.comunidade.domain.Invites;
 import com.comunidade.domain.Time;
+import com.comunidade.domain.Usuario;
 import com.comunidade.dto.InvitesDTO;
 import com.comunidade.dto.TimeDTO;
 import com.comunidade.enums.Nivel;
@@ -32,6 +33,16 @@ public class InviteService {
 				"Objeto não encontrado! Id: " + id + ", Tipo: " + Client.class.getName()));
 	}
 	
+	public List<Invites> findByEmail(String email) {
+		List<Invites> obj = repo.findByReceiverEmail(email);
+		return obj;
+	}
+	
+	public List<Invites> findByUserId(Usuario userId) {
+		List<Invites> obj = repo.findByUserId(userId);
+		return obj;
+	}
+	
 	public Invites insert(Invites obj) {
 		obj.setId(null);
 		return repo.save(obj);
@@ -44,6 +55,21 @@ public class InviteService {
 	
 	public List<Invites> update(Invites obj) {
 		return repo.saveAll(Arrays.asList(obj));
+	}
+	
+	public List<Invites> listByMaster(String masterId) {
+		List<Invites> lista = repo.searchByMaster(masterId);
+		return lista;
+	}
+	
+	public List<Invites> listByNivel(Nivel nivel) {
+		List<Invites> lista = repo.findByNivel(nivel);
+		return lista;
+	}
+	
+	public List<Invites> listBySenior(String seniorId) {
+		List<Invites> lista = repo.searchBySenior(seniorId);
+		return lista;
 	}
 	
 	public void delete(Integer id) {
@@ -59,11 +85,9 @@ public class InviteService {
 	public Invites fromDTO(InvitesDTO objDto) {
 		Invites invite = new Invites(
 				objDto.getId(),objDto.getUserId(),objDto.getReceiverEmail(),
-				Nivel.toEnum(objDto.getNivel()),objDto.getExpirationDate(),objDto.getAcceptDate(),
+				objDto.getExpirationDate(),objDto.getAcceptDate(),
 				objDto.getInviteCode(),objDto.getStatus(),objDto.isSeniorAproval(),
-				objDto.isMasterAproval());
-		//time.setDescription(objDto.getDescription());
-		//time.setName(objDto.getName());
+				objDto.isMasterAproval(),objDto.getDescAprov());
 		return invite;
 	}
 	

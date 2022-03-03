@@ -52,6 +52,12 @@ public class Usuario implements Serializable {
 	
 	private Date birthDay;
 	
+	
+	@OneToOne(fetch = FetchType.LAZY,
+    cascade =  CascadeType.ALL,
+    mappedBy = "user")
+	private FbaseToken fbaseToken;
+	
 	@Column(unique=true)
 	private String tell;
 	
@@ -91,6 +97,16 @@ public class Usuario implements Serializable {
 	//*@CollectionTable(name = "NIVEL")
 	private Nivel nivel;// = new HashSet<>();
 	
+	
+	
+	public FbaseToken getFbaseToken() {
+		return fbaseToken;
+	}
+
+	public void setFbaseToken(FbaseToken fbaseToken) {
+		this.fbaseToken = fbaseToken;
+	}
+
 	@JsonIgnore
 	@OneToMany(mappedBy = "userId")
 	private Set<Invites> invites;
@@ -100,6 +116,10 @@ public class Usuario implements Serializable {
 	Set<Squad> squads = new HashSet<>();
 	
 	@JsonIgnore
+	@ManyToMany(mappedBy = "masters")	
+	Set<Invites> invitesaprov = new HashSet<>();
+	
+	@JsonIgnore
 	@ManyToMany(mappedBy = "users")	
 	Set<Time> times = new HashSet<>();
 	
@@ -107,6 +127,16 @@ public class Usuario implements Serializable {
 	@OneToMany(mappedBy = "usuarioId")
 	private Set<Message> messages = new HashSet<>();
 	
+	
+	
+	public Set<Invites> getInvitesaprov() {
+		return invitesaprov;
+	}
+
+	public void setInvitesaprov(Set<Invites> invitesaprov) {
+		this.invitesaprov = invitesaprov;
+	}
+
 	@Enumerated(EnumType.ORDINAL)
 	public Nivel getNivel() {
 		return nivel;

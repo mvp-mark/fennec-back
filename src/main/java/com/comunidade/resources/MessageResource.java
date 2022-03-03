@@ -154,7 +154,6 @@ public class MessageResource {
 			@PathVariable int offset, @PathVariable int pageSize) {		
 		try {
 			//Page<Message> messagesWithPagination = service.listAllWithPagination(offset, pageSize);
-			
 			Page<Message> messagesWithPagination = service.listGeral(offset, pageSize);
 			
 			

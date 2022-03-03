@@ -17,6 +17,8 @@ public class InvitesDTO {
 	
 	private String receiverEmail;
 	
+	private String descAprov;
+	
 	private int nivel;
 	
 	private Date expirationDate;
@@ -46,6 +48,16 @@ public class InvitesDTO {
 		this.status = status;
 		this.seniorAproval = seniorAproval;
 		this.masterAproval = juniorAproval;
+	}
+
+	
+	
+	public String getDescAprov() {
+		return descAprov;
+	}
+
+	public void setDescAprov(String descAprov) {
+		this.descAprov = descAprov;
 	}
 
 	public Integer getId() {
