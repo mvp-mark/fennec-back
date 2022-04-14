@@ -46,15 +46,15 @@ public class MessageResource {
 
 	@Autowired
 	private TimeService tservice;
-	
+
 	@Autowired
 	private SquadService sservice;
 	@Autowired
 	private JWTUtil jwt;
 
-		@Autowired
-    	SimpMessagingTemplate template;
-		
+	@Autowired
+	SimpMessagingTemplate template;
+
 	// @RequestMapping(value="/send",method=RequestMethod.POST)
 	@PostMapping("/send")
 	@SendTo("/topic/message")
@@ -62,117 +62,123 @@ public class MessageResource {
 			@RequestHeader(name = "Authorization") String token) throws ParseException {
 		try {
 			System.out.println("teste, texto: " + token);
-			Usuario user =jwt.getUser(token.substring(7));
+			Usuario user = jwt.getUser(token.substring(7));
 			objDto.setUsuarioId(user);
 			Message obj = service.fromDTO(objDto);
-					template.convertAndSend("/topic/message", obj);
-					
+			template.convertAndSend("/topic/message", obj);
+
 			obj.setMeio(Meio.FEEDGERAL);
-			//Atribuir a mensagem sempre para o time geral
-			
+			// Atribuir a mensagem sempre para o time geral
+
 			obj = service.insert(obj);
 			return ResponseEntity.ok().body(obj);
-		}catch(Exception e) {
-			System.out.println("exception e"+e);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao.");
+		} catch (Exception e) {
+			System.out.println("exception e" + e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Ops... Ocorreu um erro durante a sua requisicao.");
 		}
-		
-		
-	}
-	
-	@PostMapping("/send/{meio}")
-	public ResponseEntity insertprocedure(@RequestBody @Valid MessageDTO objDto,
-			@RequestHeader(name = "Authorization") String token,
-			@PathVariable int meio
-		) throws ParseException {
-		
-		try {
-			System.out.println("teste, texto: " + token);
-			Usuario user =jwt.getUser(token.substring(7));
-			objDto.setUsuarioId(user);
-			Message obj = service.fromDTO(objDto);
-			
-			//precisa verificar as permissões do usuario ao 
-			//enviar a mensagem
-			
-			//verificar se usuario pertence ao time ou nao
-			
-			switch(meio) {
-			case (0): //feedgeral enum(1)
-				//
-				obj.setMeio(Meio.FEEDGERAL);
-				obj = service.insert(obj);
-				break;
-			case (1): //time enum(2)
-				//
-				obj.setMeio(Meio.TIME);
-				Time time = tservice.find(obj.getTime().getId());
-				obj.setTime(time);
-				if(time.getUsers().contains(user)) {
-					System.out.println("user ok");
-					obj = service.insert(obj);
-				}else {
-					return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Ops... Você não faz parte desse time");
-				}
-				break;
-			
-			case (2): //squad enum(3)
-				//
-				obj.setMeio(Meio.SQUAD);
-				Squad squad = sservice.find(obj.getSquad().getId());
-				obj.setSquad(squad);
-				if(squad.getUsers().contains(user)) {
-					System.out.println("user ok");
-					obj = service.insert(obj);
-				}else {
-					return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Ops... Você não faz parte desse squad");
-				}
-				break;
-			default:
-				//
-				break;
-			}
-			
-			return ResponseEntity.ok().body(obj);
-			
-		}catch(Exception e) {
-			System.out.println("exception e"+e);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao.");
-		}
-		
+
 	}
 
-	@RequestMapping(method=RequestMethod.GET)
+	@PostMapping("/send/{meio}")
+	@SendTo("/topic/message/{meio}")
+	public ResponseEntity insertprocedure(@RequestBody @Valid MessageDTO objDto,
+			@RequestHeader(name = "Authorization") String token,
+			@PathVariable int meio) throws ParseException {
+
+		try {
+			System.out.println("teste, texto: " + token);
+			Usuario user = jwt.getUser(token.substring(7));
+			objDto.setUsuarioId(user);
+			Message obj = service.fromDTO(objDto);
+			System.out.println("MEIO =========<<>>" + meio);
+			template.convertAndSend("/topic/message/" + meio, obj);
+			// precisa verificar as permissões do usuario ao
+			// enviar a mensagem
+
+			// verificar se usuario pertence ao time ou nao
+
+			switch (meio) {
+				case (0): // feedgeral enum(1)
+					//
+					obj.setMeio(Meio.FEEDGERAL);
+					obj = service.insert(obj);
+					break;
+				case (1): // time enum(2)
+					//
+					obj.setMeio(Meio.TIME);
+					Time time = tservice.find(obj.getTime().getId());
+					obj.setTime(time);
+					if (time.getUsers().contains(user)) {
+						System.out.println("user ok");
+						obj = service.insert(obj);
+					} else {
+						return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+								.body("Ops... Você não faz parte desse time");
+					}
+					break;
+
+				case (2): // squad enum(3)
+					//
+					obj.setMeio(Meio.SQUAD);
+					Squad squad = sservice.find(obj.getSquad().getId());
+					obj.setSquad(squad);
+					if (squad.getUsers().contains(user)) {
+						System.out.println("user ok");
+						obj = service.insert(obj);
+					} else {
+						return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+								.body("Ops... Você não faz parte desse squad");
+					}
+					break;
+				default:
+					//
+					break;
+			}
+
+			return ResponseEntity.ok().body(obj);
+
+		} catch (Exception e) {
+			System.out.println("exception e" + e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Ops... Ocorreu um erro durante a sua requisicao.");
+		}
+
+	}
+
+	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity findAll() {
-		
+
 		try {
 			List<Message> list = service.findAll();
-			
+
 			return ResponseEntity.ok().body(list);
-			
-		}catch(Exception e) {
-			System.out.println("exception e"+e);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao.");
+
+		} catch (Exception e) {
+			System.out.println("exception e" + e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Ops... Ocorreu um erro durante a sua requisicao.");
 		}
-		
+
 	}
 
 	@GetMapping("/pagination/{offset}/{pageSize}")
 	private ResponseEntity getListAllWithPagination(
-			@PathVariable int offset, @PathVariable int pageSize) {		
+			@PathVariable int offset, @PathVariable int pageSize) {
 		try {
-			//Page<Message> messagesWithPagination = service.listAllWithPagination(offset, pageSize);
-			
+			// Page<Message> messagesWithPagination = service.listAllWithPagination(offset,
+			// pageSize);
+
 			Page<Message> messagesWithPagination = service.listGeral(offset, pageSize);
-			
-			
-			return  ResponseEntity.ok().body(messagesWithPagination);
-			
-		}catch(Exception e) {
-			System.out.println("exception e"+e);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao.");
+
+			return ResponseEntity.ok().body(messagesWithPagination);
+
+		} catch (Exception e) {
+			System.out.println("exception e" + e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Ops... Ocorreu um erro durante a sua requisicao.");
 		}
-		
+
 	}
 
 	@GetMapping("/pagbymaster/{offset}/{pageSize}")
@@ -180,103 +186,112 @@ public class MessageResource {
 			@PathVariable int offset, @PathVariable int pageSize,
 			@RequestHeader(name = "Authorization") String token) {
 		try {
-			Usuario user =jwt.getUser(token.substring(7));
-		
+			Usuario user = jwt.getUser(token.substring(7));
+
 			String master = user.getHierarquia().split("/")[0];
-			Page<Message> messagesWithPagination = service.listByMasterWithPagination(master,offset, pageSize);
-			
-			return  ResponseEntity.ok().body(messagesWithPagination);
-			
-		}catch(Exception e) {
-			System.out.println("exception e"+e);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao.");
+			Page<Message> messagesWithPagination = service.listByMasterWithPagination(master, offset, pageSize);
+
+			return ResponseEntity.ok().body(messagesWithPagination);
+
+		} catch (Exception e) {
+			System.out.println("exception e" + e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Ops... Ocorreu um erro durante a sua requisicao.");
 		}
-		
+
 	}
-	
+
 	@GetMapping("/pagbymastertom/{offset}/{pageSize}")
 	private ResponseEntity getListMastertoMasterWithPagination(
 			@PathVariable int offset, @PathVariable int pageSize,
 			@RequestHeader(name = "Authorization") String token) {
 		try {
-			Usuario user =jwt.getUser(token.substring(7));
-		
+			Usuario user = jwt.getUser(token.substring(7));
+
 			String master = user.getId().toString();
-			Page<Message> messagesWithPagination = service.listByMastertoMasterWithPagination(master,offset, pageSize);
-			
-			return  ResponseEntity.ok().body(messagesWithPagination);
-			
-		}catch(Exception e) {
-			System.out.println("exception e"+e);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao.");
+			Page<Message> messagesWithPagination = service.listByMastertoMasterWithPagination(master, offset, pageSize);
+
+			return ResponseEntity.ok().body(messagesWithPagination);
+
+		} catch (Exception e) {
+			System.out.println("exception e" + e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Ops... Ocorreu um erro durante a sua requisicao.");
 		}
-		
+
 	}
-	
+
 	@GetMapping("/pagbytime/{offset}/{pageSize}/{timeid}")
 	private ResponseEntity getListByTime(
 			@PathVariable int offset, @PathVariable int pageSize, @PathVariable int timeid,
 			@RequestHeader(name = "Authorization") String token) {
-		
+
 		try {
-			Usuario user =jwt.getUser(token.substring(7));
-			
+			Usuario user = jwt.getUser(token.substring(7));
+
 			Time time = tservice.find(timeid);
-			if(time.getUsers().contains(user)) {
-				Page<Message> messagesWithPagination = service.listAllWithPaginationByTime(timeid,offset, pageSize);
-				return  ResponseEntity.ok().body(messagesWithPagination);
-			}else {
+			if (time.getUsers().contains(user)) {
+				Page<Message> messagesWithPagination = service.listAllWithPaginationByTime(timeid, offset, pageSize);
+				return ResponseEntity.ok().body(messagesWithPagination);
+			} else {
 				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Ops... Você não faz parte desse time");
 			}
-			
-		}catch(Exception e) {
-			System.out.println("exception e"+e);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao.");
+
+		} catch (Exception e) {
+			System.out.println("exception e" + e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Ops... Ocorreu um erro durante a sua requisicao.");
 		}
-		
-		
+
 	}
-	
+
 	@GetMapping("/pagbysquad/{offset}/{pageSize}/{squadid}")
 	private ResponseEntity getListBySquad(
 			@PathVariable int offset, @PathVariable int pageSize, @PathVariable int squadid,
 			@RequestHeader(name = "Authorization") String token) {
-		
+
 		try {
-			
-			Usuario user =jwt.getUser(token.substring(7));
-			
+
+			Usuario user = jwt.getUser(token.substring(7));
+
 			Squad squad = sservice.find(squadid);
-			
-			if(squad.getUsers().contains(user)) {
-				Page<Message> messagesWithPagination = service.listAllWithPaginationBySquad(squadid,offset, pageSize);			
-				return  ResponseEntity.ok().body(messagesWithPagination);
-			}else {
+
+			if (squad.getUsers().contains(user)) {
+				Page<Message> messagesWithPagination = service.listAllWithPaginationBySquad(squadid, offset, pageSize);
+				return ResponseEntity.ok().body(messagesWithPagination);
+			} else {
 				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Ops... Você não faz parte desse squad");
 			}
-			
-		}catch(Exception e) {
-			System.out.println("exception e"+e);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ops... Ocorreu um erro durante a sua requisicao.");
+
+		} catch (Exception e) {
+			System.out.println("exception e" + e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Ops... Ocorreu um erro durante a sua requisicao.");
 		}
-		
+
 	}
-	
+
 	/*
-	@GetMapping("/pagination/{offset}/{pageSize}")
-	private ResponseEntity<Page<Message>> getListTimeWithPagination(@PathVariable int offset, @PathVariable int pageSize) {
-        //Mostra a paginacao com base no master do usuario
-		Page<Message> messagesWithPagination = service.listAllWithPagination(offset, pageSize);
+	 * @GetMapping("/pagination/{offset}/{pageSize}")
+	 * private ResponseEntity<Page<Message>> getListTimeWithPagination(@PathVariable
+	 * int offset, @PathVariable int pageSize) {
+	 * //Mostra a paginacao com base no master do usuario
+	 * Page<Message> messagesWithPagination = service.listAllWithPagination(offset,
+	 * pageSize);
+	 * 
+	 * return ResponseEntity.ok().body(messagesWithPagination);
+	 * }
+	 * 
+	 * @GetMapping("/pagination/{offset}/{pageSize}")
+	 * private ResponseEntity<Page<Message>>
+	 * getListSquadWithPagination(@PathVariable int offset, @PathVariable int
+	 * pageSize) {
+	 * //Mostra a paginacao com base no master do usuario
+	 * Page<Message> messagesWithPagination = service.listAllWithPagination(offset,
+	 * pageSize);
+	 * 
+	 * return ResponseEntity.ok().body(messagesWithPagination);
+	 * }
+	 */
 
-        return  ResponseEntity.ok().body(messagesWithPagination);
-	}
-	
-	@GetMapping("/pagination/{offset}/{pageSize}")
-	private ResponseEntity<Page<Message>> getListSquadWithPagination(@PathVariable int offset, @PathVariable int pageSize) {
-        //Mostra a paginacao com base no master do usuario
-		Page<Message> messagesWithPagination = service.listAllWithPagination(offset, pageSize);
-
-        return  ResponseEntity.ok().body(messagesWithPagination);
-	}*/
-	
 }
